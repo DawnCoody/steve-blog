@@ -147,41 +147,20 @@
   line-height: 1.6;
   position: relative;
   background: #f6f8fa;
-  /* 关键：设置横向滚动 */
-  overflow-x: auto;
-  overflow-y: hidden;
+  /* 允许内容换行，不显示横向滚动条 */
+  overflow-x: visible;
+  overflow-y: visible;
+  overflow: visible;
   /* 确保宽度限制 */
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  /* 滚动条样式 */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
 /* 覆盖 highlight.js 的 pre code.hljs 样式（如果存在） */
 .content-block pre code.hljs {
   overflow-x: visible; /* 覆盖 highlight.js 的 overflow-x: auto */
   padding: 0; /* 覆盖 highlight.js 的 padding: 1em */
-}
-
-/* Webkit 浏览器滚动条样式 */
-.content-block pre.hljs::-webkit-scrollbar {
-  height: 8px;
-}
-
-.content-block pre.hljs::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 4px;
-}
-
-.content-block pre.hljs::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-.content-block pre.hljs::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
 }
 
 /* code 元素 - 代码内容 */
@@ -191,31 +170,27 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
   display: block;
-  /* 关键：不换行，保持代码原始格式 */
-  white-space: pre;
-  word-wrap: normal;
-  word-break: normal;
-  overflow-wrap: normal;
+  /* 关键：允许自动换行，保留空格和换行符 */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
   color: inherit;
-  /* 确保代码内容可以超出 pre 容器的宽度 */
-  width: auto;
-  max-width: none;
-  min-width: max-content;
-  /* 确保代码不会被压缩 */
-  flex-shrink: 0;
-  /* code 元素不设置 overflow，让 pre 元素处理滚动 */
+  /* 确保代码内容在容器宽度内 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* 允许内容换行 */
   overflow: visible;
-  /* 确保内容可以自然扩展 */
-  box-sizing: content-box;
 }
 
-/* 确保 code 元素内的所有子元素（highlight.js 生成的 span）也不会换行 */
+/* 确保 code 元素内的所有子元素（highlight.js 生成的 span）也允许换行 */
 .content-block pre.hljs code *,
 .content-block pre.hljs code span {
-  white-space: pre;
-  word-wrap: normal;
-  word-break: normal;
-  overflow-wrap: normal;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
   display: inline;
 }
 
