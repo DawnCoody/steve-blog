@@ -555,6 +555,19 @@ body.reading-mode .comment-section {
   display: none;
 }
 
+/* 阅读模式下评论区域的边距调整 */
+body.reading-mode .comments {
+  padding: 0 24px;
+  margin-top: 40px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  body.reading-mode .comments {
+    padding: 0 16px;
+  }
+}
+
 /* 阅读模式下隐藏 TOC */
 body.reading-mode .toc,
 body.reading-mode .detail-grid .toc {
