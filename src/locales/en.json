@@ -178,6 +178,20 @@
     "wechatAccount": "Scan QR Code",
     "available": "Always Available",
     "availableDesc": "I usually respond within 24 hours"
+  },
+  "fab": {
+    "settings": "Settings",
+    "scrollToTop": "Scroll to top",
+    "switchToDoubleColumn": "Switch to double column layout",
+    "switchToSingleColumn": "Switch to single column layout",
+    "enterReadingMode": "Enter reading mode",
+    "exitReadingMode": "Exit reading mode",
+    "switchToTimelineView": "Switch to timeline view",
+    "switchToListView": "Switch to list view",
+    "switchToEnglish": "Switch to English",
+    "switchToChinese": "Switch to Chinese",
+    "switchToLightMode": "Switch to light mode",
+    "switchToDarkMode": "Switch to dark mode"
   }
 }
 

@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAppStore } from '@/store/modules/app'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const route = useRoute()
 const appStore = useAppStore()
 
@@ -21,6 +21,13 @@ const showScrollTop = ref(false)
 
 // 按钮容器引用
 const containerRef = ref<HTMLElement | null>(null)
+
+// 当前显示的 tooltip 文本
+const tooltipText = ref('')
+// tooltip 位置
+const tooltipPosition = ref({ x: 0, y: 0 })
+// 是否显示 tooltip
+const showTooltip = ref(false)
 
 /**
  * 切换按钮组展开/收起状态
@@ -97,6 +104,28 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 }
 
+/**
+ * 显示 tooltip
+ */
+const showTooltipHandler = (event: MouseEvent, text: string) => {
+  tooltipText.value = text
+  const button = event.currentTarget as HTMLElement
+  const rect = button.getBoundingClientRect()
+  // tooltip 显示在按钮左侧
+  tooltipPosition.value = {
+    x: rect.left - 8,
+    y: rect.top + rect.height / 2
+  }
+  showTooltip.value = true
+}
+
+/**
+ * 隐藏 tooltip
+ */
+const hideTooltip = () => {
+  showTooltip.value = false
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   document.addEventListener('click', handleClickOutside)
@@ -119,8 +148,10 @@ onUnmounted(() => {
         key="scroll-top"
         class="fab-button fab-button-scroll-top"
         type="button"
-        aria-label="Scroll to top"
+        :aria-label="t('fab.scrollToTop')"
         @click="scrollToTop"
+        @mouseenter="showTooltipHandler($event, t('fab.scrollToTop'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">↑</span>
       </button>
@@ -131,8 +162,10 @@ onUnmounted(() => {
         key="layout"
         class="fab-button fab-button-layout"
         type="button"
-        :aria-label="appStore.articleLayout === 'single' ? 'Switch to double column' : 'Switch to single column'"
+        :aria-label="appStore.articleLayout === 'single' ? t('fab.switchToDoubleColumn') : t('fab.switchToSingleColumn')"
         @click="handleLayoutToggle"
+        @mouseenter="showTooltipHandler($event, appStore.articleLayout === 'single' ? t('fab.switchToDoubleColumn') : t('fab.switchToSingleColumn'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">{{ appStore.articleLayout === 'single' ? '⫸' : '⫷' }}</span>
       </button>
@@ -143,8 +176,10 @@ onUnmounted(() => {
         key="reading-mode"
         class="fab-button fab-button-reading"
         type="button"
-        :aria-label="appStore.readingMode ? 'Exit reading mode' : 'Enter reading mode'"
+        :aria-label="appStore.readingMode ? t('fab.exitReadingMode') : t('fab.enterReadingMode')"
         @click="handleReadingModeToggle"
+        @mouseenter="showTooltipHandler($event, appStore.readingMode ? t('fab.exitReadingMode') : t('fab.enterReadingMode'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">{{ appStore.readingMode ? '📄' : '📖' }}</span>
       </button>
@@ -155,8 +190,10 @@ onUnmounted(() => {
         key="view-mode"
         class="fab-button fab-button-view-mode"
         type="button"
-        :aria-label="appStore.articleViewMode === 'list' ? 'Switch to timeline view' : 'Switch to list view'"
+        :aria-label="appStore.articleViewMode === 'list' ? t('fab.switchToTimelineView') : t('fab.switchToListView')"
         @click="handleViewModeToggle"
+        @mouseenter="showTooltipHandler($event, appStore.articleViewMode === 'list' ? t('fab.switchToTimelineView') : t('fab.switchToListView'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">{{ appStore.articleViewMode === 'list' ? '📅' : '📋' }}</span>
       </button>
@@ -167,8 +204,10 @@ onUnmounted(() => {
         key="locale"
         class="fab-button fab-button-locale"
         type="button"
-        :aria-label="locale === 'zh' ? 'Switch to English' : '切换到中文'"
+        :aria-label="locale === 'zh' ? t('fab.switchToEnglish') : t('fab.switchToChinese')"
         @click="handleLocaleToggle"
+        @mouseenter="showTooltipHandler($event, locale === 'zh' ? t('fab.switchToEnglish') : t('fab.switchToChinese'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">{{ locale.toUpperCase() }}</span>
       </button>
@@ -179,8 +218,10 @@ onUnmounted(() => {
         key="theme"
         class="fab-button fab-button-theme"
         type="button"
-        :aria-label="appStore.isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        :aria-label="appStore.isDark ? t('fab.switchToLightMode') : t('fab.switchToDarkMode')"
         @click="handleThemeToggle"
+        @mouseenter="showTooltipHandler($event, appStore.isDark ? t('fab.switchToLightMode') : t('fab.switchToDarkMode'))"
+        @mouseleave="hideTooltip"
       >
         <span class="fab-icon">{{ appStore.isDark ? '☀' : '☾' }}</span>
       </button>
@@ -191,11 +232,28 @@ onUnmounted(() => {
       class="fab-button fab-button-main"
       :class="{ expanded: isExpanded }"
       type="button"
-      aria-label="Settings"
+      :aria-label="t('fab.settings')"
       @click="toggleExpanded"
+      @mouseenter="showTooltipHandler($event, t('fab.settings'))"
+      @mouseleave="hideTooltip"
     >
       <span class="fab-icon" :class="{ rotated: isExpanded }">⚙</span>
     </button>
+
+    <!-- Tooltip -->
+    <Teleport to="body">
+      <div
+        v-if="showTooltip && tooltipText"
+        class="fab-tooltip"
+        :style="{
+          left: `${tooltipPosition.x - 8}px`,
+          top: `${tooltipPosition.y}px`,
+          transform: 'translateX(-100%) translateY(-50%)'
+        }"
+      >
+        {{ tooltipText }}
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -317,6 +375,45 @@ onUnmounted(() => {
 
 .fab-button-move {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tooltip 样式 */
+.fab-tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+.fab-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid rgba(0, 0, 0, 0.85);
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%) translateY(-50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-100%) translateY(-50%) scale(1);
+  }
 }
 
 @media (max-width: 768px) {

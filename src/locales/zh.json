@@ -178,6 +178,20 @@
     "wechatAccount": "扫码关注",
     "available": "随时欢迎联系",
     "availableDesc": "我通常会在24小时内回复您的消息"
+  },
+  "fab": {
+    "settings": "设置",
+    "scrollToTop": "滚动到顶部",
+    "switchToDoubleColumn": "切换到双栏布局",
+    "switchToSingleColumn": "切换到单栏布局",
+    "enterReadingMode": "进入阅读模式",
+    "exitReadingMode": "退出阅读模式",
+    "switchToTimelineView": "切换到时间轴视图",
+    "switchToListView": "切换到列表视图",
+    "switchToEnglish": "切换到英文",
+    "switchToChinese": "切换到中文",
+    "switchToLightMode": "切换到浅色模式",
+    "switchToDarkMode": "切换到深色模式"
   }
 }
 
