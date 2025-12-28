@@ -159,8 +159,8 @@ onMounted(() => {
           />
         </div>
         
-        <!-- 文章目录 -->
-        <ArticleTOC :toc="rendered.toc" />
+        <!-- 文章目录 - 阅读模式下隐藏 -->
+        <ArticleTOC v-if="!appStore.readingMode" :toc="rendered.toc" />
       </div>
 
       <article v-else class="article-card detail-card empty-state">

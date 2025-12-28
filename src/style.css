@@ -358,11 +358,15 @@ body.reading-mode .sidebar {
 body.reading-mode .article-area {
   width: 100%;
   padding: 0;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 body.reading-mode .detail-grid {
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr !important;
   gap: 0;
+  max-width: 100%;
+  margin: 0;
 }
 
 body.reading-mode .fab-container {
@@ -404,8 +408,9 @@ body.reading-mode .detail-hero .title-area .badge {
 
 /* 阅读模式下文章内容区域 */
 body.reading-mode .content-wrapper {
-  padding: 0 24px;
+  padding: 0;
   max-width: 100%;
+  width: 100%;
 }
 
 body.reading-mode .detail-card {
@@ -414,6 +419,9 @@ body.reading-mode .detail-card {
   box-shadow: none;
   background: transparent;
   gap: 0;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 body.reading-mode .detail-card .card-cover {
@@ -445,12 +453,15 @@ body.reading-mode .detail-card .nav-row {
 }
 
 body.reading-mode .detail-card .content-block {
-  padding: 0;
+  padding: 0 24px;
   border: none;
   background: transparent;
   font-size: 18px;
   line-height: 1.8;
   color: var(--text-primary);
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body.reading-mode .detail-card .content-block h1,
@@ -545,13 +556,19 @@ body.reading-mode .comment-section {
 }
 
 /* 阅读模式下隐藏 TOC */
-body.reading-mode .toc {
-  display: none;
+body.reading-mode .toc,
+body.reading-mode .detail-grid .toc {
+  display: none !important;
 }
 
 @media (max-width: 768px) {
   body.reading-mode .page {
     max-width: 100%;
+  }
+
+  body.reading-mode .article-area {
+    max-width: 100%;
+    padding: 0;
   }
 
   body.reading-mode .detail-hero {
@@ -563,11 +580,12 @@ body.reading-mode .toc {
   }
 
   body.reading-mode .content-wrapper {
-    padding: 0 16px;
+    padding: 0;
   }
 
   body.reading-mode .detail-card .content-block {
     font-size: 16px;
+    padding: 0 16px;
   }
 
   body.reading-mode .detail-card .content-block h1 {
