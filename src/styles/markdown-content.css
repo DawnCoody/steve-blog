@@ -1,0 +1,540 @@
+/**
+ * Markdown 内容样式
+ * 用于文章内容区域的 markdown 渲染样式
+ * 包括：标题、段落、列表、代码块、表格、引用等
+ */
+
+/* ==================== 基础内容样式 ==================== */
+.content-block {
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.content-block p {
+  margin: 0;
+}
+
+/* ==================== 标题样式 ==================== */
+.content-block h1,
+.content-block h2,
+.content-block h3,
+.content-block h4,
+.content-block h4,
+.content-block h5,
+.content-block h6 {
+  margin: 12px 0 8px;
+  line-height: 1.4;
+  scroll-margin-top: 100px;
+}
+
+.content-block h1 {
+  font-size: 2em;
+  margin-block: 0.67em;
+}
+
+.content-block h2 {
+  font-size: 1.5em;
+  margin-block: 0.75em;
+}
+
+.content-block h3 {
+  font-size: 1.17em;
+  margin-block: 0.83em;
+}
+
+.content-block h4 {
+  font-size: 1em;
+  margin-block: 1em;
+}
+
+.content-block h5 {
+  font-size: 0.83em;
+  margin-block: 1.17em;
+}
+
+.content-block h6 {
+  font-size: 0.67em;
+  margin-block: 1.33em;
+}
+
+/* ==================== 列表样式 ==================== */
+.content-block ul,
+.content-block ol {
+  padding-left: 18px;
+  margin: 8px 0 12px;
+  color: var(--text-primary);
+}
+
+/* 任务列表样式 */
+.content-block ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.content-block ul.contains-task-list li.task-list-item {
+  list-style: none;
+  padding-left: 0;
+  margin: 6px 0;
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+
+.content-block ul.contains-task-list li.task-list-item::marker,
+.content-block ul.contains-task-list li.task-list-item::before {
+  display: none;
+}
+
+.content-block ul.contains-task-list li.task-list-item input[type="checkbox"] {
+  margin-right: 10px;
+  margin-top: 2px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  flex-shrink: 0;
+  appearance: checkbox;
+  -webkit-appearance: checkbox;
+  -moz-appearance: checkbox;
+}
+
+.content-block ul.contains-task-list li.task-list-item label {
+  cursor: pointer;
+  display: inline;
+  user-select: none;
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.content-block ul.contains-task-list li.task-list-item input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  opacity: 0.7;
+  color: var(--text-muted);
+}
+
+/* ==================== 引用块样式 ==================== */
+.content-block blockquote {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  display: block;
+}
+
+.content-block blockquote p {
+  margin: 0;
+}
+
+.content-block blockquote p + p {
+  margin-top: 8px;
+}
+
+/* ==================== 代码块样式 ==================== */
+/* pre 元素 - 代码块容器 */
+/* 使用更高的选择器优先级覆盖 highlight.js 的样式 */
+.content-block pre.hljs {
+  margin: 12px 0;
+  padding: 16px;
+  padding-top: 40px; /* 为复制按钮留出空间 */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative;
+  background: #f6f8fa;
+  /* 关键：设置横向滚动 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* 确保宽度限制 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* 滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+/* 覆盖 highlight.js 的 pre code.hljs 样式（如果存在） */
+.content-block pre code.hljs {
+  overflow-x: visible; /* 覆盖 highlight.js 的 overflow-x: auto */
+  padding: 0; /* 覆盖 highlight.js 的 padding: 1em */
+}
+
+/* Webkit 浏览器滚动条样式 */
+.content-block pre.hljs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* code 元素 - 代码内容 */
+.content-block pre.hljs code {
+  padding: 0;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  display: block;
+  /* 关键：不换行，保持代码原始格式 */
+  white-space: pre;
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  color: inherit;
+  /* 确保代码内容可以超出 pre 容器的宽度 */
+  width: auto;
+  max-width: none;
+  min-width: max-content;
+  /* 确保代码不会被压缩 */
+  flex-shrink: 0;
+  /* code 元素不设置 overflow，让 pre 元素处理滚动 */
+  overflow: visible;
+  /* 确保内容可以自然扩展 */
+  box-sizing: content-box;
+}
+
+/* 确保 code 元素内的所有子元素（highlight.js 生成的 span）也不会换行 */
+.content-block pre.hljs code *,
+.content-block pre.hljs code span {
+  white-space: pre;
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  display: inline;
+}
+
+/* 复制按钮样式 */
+.content-block pre.hljs .copy-code-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.content-block pre.hljs .copy-code-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.content-block pre.hljs .copy-code-btn.copied {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--bg);
+}
+
+.content-block pre.hljs .copy-code-btn:active {
+  transform: scale(0.95);
+}
+
+/* 内联代码样式 */
+.content-block code:not(pre code) {
+  background: #fff5f5;
+  color: #c7254e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* ==================== 表格样式 ==================== */
+.content-block table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: table;
+  background: var(--surface);
+}
+
+.content-block table th,
+.content-block table td {
+  padding: 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+  display: table-cell;
+}
+
+.content-block table th {
+  background: var(--surface);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.content-block table td {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.content-block table tr:nth-child(even) td {
+  background: var(--surface);
+}
+
+.content-block table tr:hover td {
+  background: var(--surface-2);
+}
+
+/* ==================== 其他元素样式 ==================== */
+.content-block img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: 12px 0;
+}
+
+.content-block em {
+  font-style: italic;
+  color: var(--text-primary);
+}
+
+.content-block strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.content-block strong em,
+.content-block em strong {
+  font-weight: 700;
+  font-style: italic;
+}
+
+.content-block del {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.content-block mark {
+  background: var(--brand);
+  color: var(--bg);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* ==================== Mermaid 图表样式 ==================== */
+.content-block .mermaid-container {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.content-block pre.mermaid {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-block pre.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ==================== LaTeX 数学公式样式 ==================== */
+.content-block .katex {
+  font-size: 1.1em;
+}
+
+.content-block .katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+}
+
+.content-block .katex-display > .katex {
+  display: inline-block;
+  text-align: initial;
+}
+
+.content-block .katex:not(.katex-display) {
+  margin: 0 0.2em;
+}
+
+/* ==================== Flowchart.js 流程图样式 ==================== */
+.content-block .flowchart-container {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.content-block pre.flowchart {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-block .flowchart-svg-container {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.content-block .flowchart-svg-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.content-block pre.flowchart-error {
+  margin: 0;
+  padding: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+}
+
+/* ==================== 暗色主题样式 ==================== */
+.dark .content-block pre.hljs {
+  background: #1e1e1e;
+  border-color: #333;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.dark .content-block pre.hljs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .content-block pre.hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dark .content-block pre.hljs code {
+  color: #d4d4d4;
+}
+
+.dark .content-block code:not(pre code) {
+  background: #4a1a1a;
+  color: #ff6b6b;
+}
+
+/* 暗色主题下的代码高亮关键字颜色 */
+.dark .content-block pre.hljs .hljs-keyword,
+.dark .content-block pre.hljs .hljs-selector-tag,
+.dark .content-block pre.hljs .hljs-literal,
+.dark .content-block pre.hljs .hljs-title,
+.dark .content-block pre.hljs .hljs-section,
+.dark .content-block pre.hljs .hljs-doctag,
+.dark .content-block pre.hljs .hljs-type,
+.dark .content-block pre.hljs .hljs-name,
+.dark .content-block pre.hljs .hljs-strong {
+  color: #569cd6;
+}
+
+.dark .content-block pre.hljs .hljs-string,
+.dark .content-block pre.hljs .hljs-title,
+.dark .content-block pre.hljs .hljs-section,
+.dark .content-block pre.hljs .hljs-built_in,
+.dark .content-block pre.hljs .hljs-builtin-name,
+.dark .content-block pre.hljs .hljs-selector-id,
+.dark .content-block pre.hljs .hljs-selector-attr,
+.dark .content-block pre.hljs .hljs-selector-pseudo,
+.dark .content-block pre.hljs .hljs-addition,
+.dark .content-block pre.hljs .hljs-variable,
+.dark .content-block pre.hljs .hljs-template-variable,
+.dark .content-block pre.hljs .hljs-attribute,
+.dark .content-block pre.hljs .hljs-link {
+  color: #ce9178;
+}
+
+.dark .content-block pre.hljs .hljs-comment,
+.dark .content-block pre.hljs .hljs-quote,
+.dark .content-block pre.hljs .hljs-deletion,
+.dark .content-block pre.hljs .hljs-meta {
+  color: #6a9955;
+}
+
+.dark .content-block pre.hljs .hljs-number,
+.dark .content-block pre.hljs .hljs-regexp,
+.dark .content-block pre.hljs .hljs-symbol,
+.dark .content-block pre.hljs .hljs-variable,
+.dark .content-block pre.hljs .hljs-template-variable,
+.dark .content-block pre.hljs .hljs-link,
+.dark .content-block pre.hljs .hljs-selector-attr,
+.dark .content-block pre.hljs .hljs-selector-pseudo {
+  color: #b5cea8;
+}
+
+.dark .content-block pre.hljs .hljs-function,
+.dark .content-block pre.hljs .hljs-title.function_ {
+  color: #dcdcaa;
+}
+
+/* 暗色主题表格样式 */
+.dark .content-block table {
+  background: var(--surface-2);
+  border: 2px solid #d1d5db;
+}
+
+.dark .content-block table th,
+.dark .content-block table td {
+  border: 1px solid #d1d5db;
+}
+
+.dark .content-block table th {
+  background: #1a1a1a;
+  color: var(--text-primary);
+}
+
+.dark .content-block table td {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.dark .content-block table tr:nth-child(even) td {
+  background: #1a1a1a;
+}
+
+.dark .content-block table tr:hover td {
+  background: #2a2a2a;
+}
+
