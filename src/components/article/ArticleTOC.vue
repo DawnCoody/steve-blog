@@ -8,7 +8,7 @@ type TocItem = {
   level: number
 }
 
-defineProps<{
+const props = defineProps<{
   toc: TocItem[]
 }>()
 
@@ -26,6 +26,10 @@ const fixedTop = ref<number>(80)
 let resizeObserver: ResizeObserver | null = null
 // 记录文章区域的初始顶部位置（页面滚动位置 + 元素相对于视口的位置）
 let initialArticleTop = 0
+// 当前激活的标题 ID
+const activeId = ref<string>('')
+// IntersectionObserver 实例（用于监听标题进入视口）
+let intersectionObserver: IntersectionObserver | null = null
 
 /**
  * 处理目录项点击，滚动到对应位置并添加偏移量避免被导航栏遮挡
@@ -96,6 +100,100 @@ const updateFixedPosition = () => {
   tocElement.style.opacity = '1'
 }
 
+/**
+ * 更新当前激活的标题（根据滚动位置）
+ */
+const updateActiveHeading = () => {
+  if (!props.toc.length) return
+
+  // 获取所有标题元素
+  const headings = props.toc
+    .map(item => {
+      const element = document.getElementById(item.id)
+      return element ? { id: item.id, element, top: element.getBoundingClientRect().top } : null
+    })
+    .filter(Boolean) as Array<{ id: string; element: HTMLElement; top: number }>
+
+  if (headings.length === 0) return
+
+  // 计算偏移量（导航栏高度 + 一些间距）
+  const offset = 120
+
+  // 找到当前视口中距离顶部最近的标题
+  // 优先选择已经滚动过顶部的标题（top < offset）
+  let activeHeading = headings.find(h => h.top <= offset && h.top > 0)
+  
+  // 如果没有找到已滚动过顶部的标题，选择第一个可见的标题
+  if (!activeHeading) {
+    activeHeading = headings.find(h => h.top > offset)
+  }
+
+  // 如果还是没有找到，选择最后一个标题（说明已经滚动到底部）
+  if (!activeHeading && headings.length > 0) {
+    activeHeading = headings[headings.length - 1]
+  }
+
+  if (activeHeading) {
+    activeId.value = activeHeading.id
+  }
+}
+
+/**
+ * 初始化标题滚动监听
+ */
+const initHeadingObserver = () => {
+  if (!props.toc.length) return
+
+  // 先断开之前的观察器
+  if (intersectionObserver) {
+    intersectionObserver.disconnect()
+  }
+
+  // 使用 IntersectionObserver 监听标题进入视口
+  intersectionObserver = new IntersectionObserver(
+    (entries) => {
+      // 找到所有进入视口的标题
+      const visibleHeadings = entries
+        .filter(entry => entry.isIntersecting)
+        .map(entry => ({
+          id: entry.target.id,
+          top: entry.boundingClientRect.top
+        }))
+        .sort((a, b) => a.top - b.top)
+
+      if (visibleHeadings.length > 0) {
+        // 选择最接近顶部的标题
+        const offset = 120
+        const activeHeading = visibleHeadings.find(h => h.top <= offset) || visibleHeadings[0]
+        if (activeHeading) {
+          activeId.value = activeHeading.id
+        }
+      }
+    },
+    {
+      root: null,
+      rootMargin: '-120px 0px -80% 0px', // 当标题进入顶部120px区域时触发
+      threshold: [0, 0.1, 0.5, 1]
+    }
+  )
+
+  // 观察所有标题元素
+  props.toc.forEach(item => {
+    const element = document.getElementById(item.id)
+    if (element) {
+      intersectionObserver?.observe(element)
+    }
+  })
+}
+
+/**
+ * 滚动事件处理函数
+ */
+const handleScroll = () => {
+  updateFixedPosition()
+  updateActiveHeading()
+}
+
 // 组件挂载时计算位置并添加监听
 onMounted(async () => {
   await nextTick()
@@ -110,6 +208,10 @@ onMounted(async () => {
     const articleArea = document.querySelector('.article-area')
     if (articleArea) {
       updateFixedPosition()
+      // 初始化标题滚动监听
+      initHeadingObserver()
+      // 初始化激活的标题
+      updateActiveHeading()
     } else {
       setTimeout(initPosition, 50)
     }
@@ -120,6 +222,8 @@ onMounted(async () => {
   // 使用 requestAnimationFrame 确保布局稳定后再计算
   requestAnimationFrame(() => {
     updateFixedPosition()
+    initHeadingObserver()
+    updateActiveHeading()
   })
   
   // 使用 ResizeObserver 监听文章区域大小变化
@@ -132,17 +236,21 @@ onMounted(async () => {
   }
   
   // 监听滚动和窗口大小变化
-  window.addEventListener('scroll', updateFixedPosition, { passive: true })
+  window.addEventListener('scroll', handleScroll, { passive: true })
   window.addEventListener('resize', updateFixedPosition, { passive: true })
 })
 
 // 组件卸载时移除监听
 onUnmounted(() => {
-  window.removeEventListener('scroll', updateFixedPosition)
+  window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', updateFixedPosition)
   if (resizeObserver) {
     resizeObserver.disconnect()
     resizeObserver = null
+  }
+  if (intersectionObserver) {
+    intersectionObserver.disconnect()
+    intersectionObserver = null
   }
 })
 </script>
@@ -156,6 +264,7 @@ onUnmounted(() => {
           v-for="item in toc"
           :key="item.id"
           class="toc-item"
+          :class="{ active: activeId === item.id }"
           :style="{ paddingLeft: `${(item.level - 1) * 12}px` }"
           :href="`#${item.id}`"
           @click="handleTocClick($event, item.id)"
@@ -231,11 +340,30 @@ onUnmounted(() => {
   border-radius: 8px;
   transition: background 0.2s ease, color 0.2s ease;
   text-decoration: none;
+  position: relative;
 }
 
 .toc-item:hover {
   background: var(--surface-2);
   color: var(--text-primary);
+}
+
+.toc-item.active {
+  color: var(--brand);
+  font-weight: 600;
+  background: var(--surface-2);
+}
+
+.toc-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--brand);
+  border-radius: 0 2px 2px 0;
 }
 
 @media (max-width: 1024px) {
