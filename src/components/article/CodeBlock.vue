@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 /**
  * 代码块组件
  * 封装 pre+code 横向滚动条功能
  * 标准方案：pre + overflow-x: auto + white-space: pre
+ * 使用 slot 实现内容插槽
  */
 
 interface Props {
-  code: string
   language?: string
   showCopyButton?: boolean
 }
@@ -26,16 +26,7 @@ const codeClass = computed(() => {
   return props.language ? `language-${props.language}` : ''
 })
 
-const codeText = computed(() => {
-  // 从 HTML 中提取纯文本
-  if (typeof document === 'undefined') {
-    // SSR 环境，使用简单的文本提取
-    return props.code.replace(/<[^>]*>/g, '')
-  }
-  const div = document.createElement('div')
-  div.innerHTML = props.code
-  return div.textContent || div.innerText || ''
-})
+const codeRef = ref<HTMLElement>()
 
 const handleCopy = async () => {
   if (!navigator.clipboard || !navigator.clipboard.writeText) {
@@ -43,8 +34,11 @@ const handleCopy = async () => {
     return
   }
 
+  // 从 code 元素中获取文本
+  const text = codeRef.value?.textContent || codeRef.value?.innerText || ''
+  
   try {
-    await navigator.clipboard.writeText(codeText.value)
+    await navigator.clipboard.writeText(text)
     copied.value = true
     setTimeout(() => {
       copied.value = false
@@ -67,7 +61,9 @@ const handleCopy = async () => {
     >
       {{ copied ? t('code.copied') : t('code.copy') }}
     </button>
-    <code :class="codeClass" v-html="code"></code>
+    <code ref="codeRef" :class="codeClass">
+      <slot></slot>
+    </code>
   </pre>
 </template>
 
