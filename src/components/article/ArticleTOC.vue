@@ -60,7 +60,9 @@ const updateFixedPosition = () => {
   const minTopOffset = 0 // 最小距离顶部的偏移量（导航栏高度）
 
   // 计算右侧位置：从窗口右边缘到 TOC 右边缘的距离
-  fixedRight.value = window.innerWidth - wrapperRect.right
+  // 增加额外的左侧间距，增大与正文的间距
+  const extraLeftSpacing = 12 // 额外的左侧间距（px）
+  fixedRight.value = window.innerWidth - wrapperRect.right - extraLeftSpacing
 
   // 获取文章内容区域的顶部位置（用于对齐）
   // 由于TOC和content-wrapper在同一个grid中，应该对齐到content-wrapper的顶部
