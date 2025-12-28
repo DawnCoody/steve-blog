@@ -192,6 +192,17 @@
     "switchToChinese": "Switch to Chinese",
     "switchToLightMode": "Switch to light mode",
     "switchToDarkMode": "Switch to dark mode"
+  },
+  "splash": {
+    "clickHint": "Click anywhere to enter",
+    "texts": [
+      "Every word is a mark of time",
+      "Every line of code is an extension of thought",
+      "Every record is a witness to growth",
+      "Here, words meet code",
+      "Here, past converses with future",
+      "Welcome to my world"
+    ]
   }
 }
 

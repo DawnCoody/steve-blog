@@ -262,7 +262,7 @@ onUnmounted(() => {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  z-index: 1000;
+  z-index: 10001;
   display: flex;
   flex-direction: column-reverse;
   align-items: center;

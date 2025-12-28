@@ -10,10 +10,16 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   // 路由配置
   routes: [
-    // 根路径重定向到文章列表页
+    // 根路径重定向到开机动画页
     {
       path: '/',
-      redirect: '/articles'
+      redirect: '/splash'
+    },
+    // 开机动画页
+    {
+      path: '/splash',
+      name: 'splash',
+      component: () => import('@/pages/SplashPage.vue')
     },
     // 首页
     {
