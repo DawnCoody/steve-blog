@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch, ref, nextTick, createApp, h } from 'vue'
+import { onMounted, watch, ref, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Article } from '@/data/types'
 import { useAppStore } from '@/store/modules/app'
@@ -11,8 +11,6 @@ import '@/styles/markdown-content.css'
 import { useCodeCopy } from '@/composables/useCodeCopy'
 import { useMermaidRenderer } from '@/composables/useMermaidRenderer'
 import { useFlowchartRenderer } from '@/composables/useFlowchartRenderer'
-// 导入组件
-import CodeBlock from '@/components/article/CodeBlock.vue'
 // 导入工具函数
 import { getCoverStyle } from '@/utils/coverStyle'
 
@@ -48,57 +46,10 @@ const { initMermaid, rerenderMermaid } = useMermaidRenderer(contentBlockRef)
 const { initFlowchart, rerenderFlowchart } = useFlowchartRenderer(contentBlockRef)
 
 /**
- * 将 markdown 渲染后的 pre+code 替换为 CodeBlock 组件
- */
-const replaceCodeBlocksWithComponent = () => {
-  nextTick(() => {
-    if (!contentBlockRef.value) return
-    
-    const codeBlocks = contentBlockRef.value.querySelectorAll('pre.hljs')
-    
-    codeBlocks.forEach((pre) => {
-      // 如果已经替换过，跳过
-      if (pre.hasAttribute('data-replaced')) return
-      
-      const codeElement = pre.querySelector('code')
-      if (!codeElement) return
-      
-      // 获取代码内容和语言
-      const codeHtml = codeElement.innerHTML
-      const language = codeElement.className.match(/language-(\w+)/)?.[1] || ''
-      
-      // 创建 CodeBlock 组件实例
-      const codeBlockWrapper = document.createElement('div')
-      codeBlockWrapper.setAttribute('data-code-block', 'true')
-      
-      // 使用 Vue 3 的 createApp 创建组件实例
-      const app = createApp({
-        render: () => h(CodeBlock, {
-          language: language,
-          showCopyButton: true
-        }, {
-          default: () => h('span', { innerHTML: codeHtml })
-        })
-      })
-      
-      app.mount(codeBlockWrapper)
-      
-      // 标记为已替换
-      pre.setAttribute('data-replaced', 'true')
-      
-      // 替换 pre 元素
-      pre.parentNode?.replaceChild(codeBlockWrapper, pre)
-    })
-  })
-}
-
-/**
  * 初始化所有内容渲染功能
  */
 const initializeContent = () => {
-  // 先替换代码块为组件
-  replaceCodeBlocksWithComponent()
-  // 然后初始化其他功能
+  // 初始化其他功能
   addCopyButtons()
   initMermaid()
   initFlowchart()
