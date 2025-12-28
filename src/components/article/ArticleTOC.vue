@@ -24,6 +24,8 @@ const fixedRight = ref<number>(0)
 const fixedTop = ref<number>(80)
 // ResizeObserver 实例
 let resizeObserver: ResizeObserver | null = null
+// 记录文章区域的初始顶部位置（页面滚动位置 + 元素相对于视口的位置）
+let initialArticleTop = 0
 
 /**
  * 处理目录项点击，滚动到对应位置并添加偏移量避免被导航栏遮挡
@@ -55,53 +57,35 @@ const updateFixedPosition = () => {
 
   const wrapperRect = tocWrapperRef.value.getBoundingClientRect()
   const tocElement = tocRef.value
-  const viewportHeight = window.innerHeight
-  const bottomOffset = 0 // 距离底部的偏移量
   const minTopOffset = 0 // 最小距离顶部的偏移量（导航栏高度）
 
   // 计算右侧位置：从窗口右边缘到 TOC 右边缘的距离
-  // 增加额外的左侧间距，增大与正文的间距
   const extraLeftSpacing = 12 // 额外的左侧间距（px）
   fixedRight.value = window.innerWidth - wrapperRect.right - extraLeftSpacing
 
   // 获取文章内容区域的顶部位置（用于对齐）
-  // 由于TOC和content-wrapper在同一个grid中，应该对齐到content-wrapper的顶部
-  const contentWrapper = document.querySelector('.content-wrapper')
-  let targetTop = wrapperRect.top // 默认使用包装器的顶部位置
+  const articleArea = document.querySelector('.article-area')
+  if (!articleArea) return
+
+  const articleRect = articleArea.getBoundingClientRect()
   
-  if (contentWrapper) {
-    const contentRect = contentWrapper.getBoundingClientRect()
-    // TOC 的顶部对齐到 content-wrapper 的顶部
-    targetTop = contentRect.top
-  } else {
-    // 如果找不到 content-wrapper，尝试查找 detail-card
-    const detailCard = document.querySelector('.detail-card')
-    if (detailCard) {
-      const cardRect = detailCard.getBoundingClientRect()
-      targetTop = cardRect.top
-    } else {
-      // 最后尝试 detail-grid
-      const detailGrid = document.querySelector('.detail-grid')
-      if (detailGrid) {
-        const gridRect = detailGrid.getBoundingClientRect()
-        targetTop = gridRect.top
-      }
-    }
+  // 记录文章区域的初始绝对位置（相对于文档顶部）
+  // 仅在第一次或页面大小变化导致位置变化时更新
+  const currentArticleTop = window.scrollY + articleRect.top
+  if (initialArticleTop === 0) {
+    initialArticleTop = currentArticleTop
+  } else if (Math.abs(initialArticleTop - currentArticleTop) > 50) {
+    // 如果位置变化超过50px，可能是页面大小变化，重新记录
+    initialArticleTop = currentArticleTop
   }
 
-  // TOC 的顶部对齐到文章内容区域的顶部
-  // 如果目标位置小于最小偏移量，则使用最小偏移量（确保不被导航栏遮挡）
-  const topOffset = targetTop < minTopOffset ? minTopOffset : targetTop
-
-  // 计算 top 值，确保 TOC 不会超出视口底部
-  const tocHeight = tocElement.offsetHeight
-  const maxTop = viewportHeight - tocHeight - bottomOffset
-  
-  // 如果 TOC 高度超过视口，调整 top 值使其不超出底部
-  if (topOffset + tocHeight > viewportHeight - bottomOffset) {
-    fixedTop.value = Math.max(minTopOffset, maxTop)
+  // 计算TOC的目标位置
+  // 当页面滚动超过文章区域初始位置时，TOC固定在顶部
+  // 否则，TOC对齐到文章区域的当前顶部位置（相对于视口）
+  if (window.scrollY >= initialArticleTop) {
+    fixedTop.value = minTopOffset
   } else {
-    fixedTop.value = topOffset
+    fixedTop.value = articleRect.top
   }
 
   // 应用固定定位
@@ -109,7 +93,6 @@ const updateFixedPosition = () => {
   tocElement.style.top = `${fixedTop.value}px`
   tocElement.style.right = `${fixedRight.value}px`
   tocElement.style.width = '240px'
-  // 位置计算完成后显示TOC
   tocElement.style.opacity = '1'
 }
 
@@ -117,73 +100,35 @@ const updateFixedPosition = () => {
 onMounted(async () => {
   await nextTick()
   
-  // 立即设置一个初始位置，避免TOC出现在错误的位置
+  // 初始化TOC位置
   if (tocRef.value) {
-    tocRef.value.style.top = '80px'
     tocRef.value.style.opacity = '0'
   }
   
-  // 等待DOM完全渲染后再计算位置
-  // 使用多个时机确保位置计算准确
-  const calculatePosition = () => {
-    // 检查目标元素是否存在（优先检查 content-wrapper）
-    const contentWrapper = document.querySelector('.content-wrapper')
-    const detailCard = document.querySelector('.detail-card')
-    if (contentWrapper || detailCard) {
+  // 等待DOM渲染完成后计算位置
+  const initPosition = () => {
+    const articleArea = document.querySelector('.article-area')
+    if (articleArea) {
       updateFixedPosition()
-      return true
     } else {
-      // 如果元素还不存在，延迟重试
-      setTimeout(calculatePosition, 50)
-      return false
+      setTimeout(initPosition, 50)
     }
   }
   
-  // 立即尝试计算
-  calculatePosition()
+  initPosition()
   
-  // 使用 requestAnimationFrame 确保在下一帧渲染时更新位置
+  // 使用 requestAnimationFrame 确保布局稳定后再计算
   requestAnimationFrame(() => {
     updateFixedPosition()
   })
   
-  // 使用双重 requestAnimationFrame 确保布局稳定
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      updateFixedPosition()
-    })
-  })
-  
-  // 延迟一点时间再次计算，确保所有内容都已渲染
-  setTimeout(() => {
-    updateFixedPosition()
-  }, 50)
-  
-  setTimeout(() => {
-    updateFixedPosition()
-  }, 150)
-  
-  // 再延迟一次，确保图片等资源加载完成
-  setTimeout(() => {
-    updateFixedPosition()
-  }, 300)
-  
-  // 页面完全加载后再计算一次
-  if (document.readyState === 'complete') {
-    updateFixedPosition()
-  } else {
-    window.addEventListener('load', () => {
-      updateFixedPosition()
-    })
-  }
-  
-  // 使用 ResizeObserver 监听内容区域大小变化
-  const contentWrapper = document.querySelector('.content-wrapper')
-  if (contentWrapper) {
+  // 使用 ResizeObserver 监听文章区域大小变化
+  const articleArea = document.querySelector('.article-area')
+  if (articleArea) {
     resizeObserver = new ResizeObserver(() => {
       updateFixedPosition()
     })
-    resizeObserver.observe(contentWrapper)
+    resizeObserver.observe(articleArea)
   }
   
   // 监听滚动和窗口大小变化
