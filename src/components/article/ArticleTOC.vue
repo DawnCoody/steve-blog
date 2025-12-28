@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 type TocItem = {
@@ -194,6 +194,44 @@ const handleScroll = () => {
   updateActiveHeading()
 }
 
+/**
+ * 滚动 TOC 使激活的项可见
+ */
+const scrollToActiveItem = () => {
+  if (!tocRef.value || !activeId.value) return
+
+  // 找到激活的 TOC 项元素
+  const activeItem = tocRef.value.querySelector(`a[href="#${activeId.value}"]`) as HTMLElement
+  if (!activeItem) return
+
+  const tocContainer = tocRef.value
+
+  // 计算容器和项的滚动位置
+  const containerTop = tocContainer.scrollTop
+  const containerHeight = tocContainer.clientHeight
+  const itemOffsetTop = activeItem.offsetTop
+  const itemHeight = activeItem.offsetHeight
+
+  // 检查项是否在可视区域内
+  const isAboveViewport = itemOffsetTop < containerTop
+  const isBelowViewport = itemOffsetTop + itemHeight > containerTop + containerHeight
+
+  // 如果项不在可视区域内，滚动到使其可见
+  if (isAboveViewport) {
+    // 项在视口上方，滚动到项的位置
+    tocContainer.scrollTo({
+      top: itemOffsetTop - 8, // 添加一些顶部间距
+      behavior: 'smooth'
+    })
+  } else if (isBelowViewport) {
+    // 项在视口下方，滚动使项可见
+    tocContainer.scrollTo({
+      top: itemOffsetTop - containerHeight + itemHeight + 8, // 添加一些底部间距
+      behavior: 'smooth'
+    })
+  }
+}
+
 // 组件挂载时计算位置并添加监听
 onMounted(async () => {
   await nextTick()
@@ -238,6 +276,13 @@ onMounted(async () => {
   // 监听滚动和窗口大小变化
   window.addEventListener('scroll', handleScroll, { passive: true })
   window.addEventListener('resize', updateFixedPosition, { passive: true })
+})
+
+// 监听 activeId 变化，自动滚动 TOC 使激活项可见
+watch(activeId, () => {
+  nextTick(() => {
+    scrollToActiveItem()
+  })
 })
 
 // 组件卸载时移除监听
