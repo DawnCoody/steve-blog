@@ -4,12 +4,13 @@
  * 显示文艺文案，动态打字机效果，点击后进入主页
  */
 
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import i18n from '@/i18n'
 
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // 是否显示开机动画
 const showSplash = ref(true)
@@ -23,9 +24,13 @@ const typingComplete = ref(false)
 // 文艺文案（从国际化文件获取）
 const splashTexts = computed(() => {
   try {
-    const texts = t('splash.texts' as any)
-    return Array.isArray(texts) ? texts as string[] : []
-  } catch {
+    const currentLocale = locale.value || 'zh'
+    const messages = i18n.global.messages.value as Record<string, any>
+    const localeMessages = messages[currentLocale]
+    const texts = localeMessages?.splash?.texts
+    return Array.isArray(texts) ? texts : []
+  } catch (error) {
+    console.error('Failed to load splash texts:', error)
     return []
   }
 })
@@ -75,11 +80,28 @@ const handleClick = () => {
   }, 500)
 }
 
-onMounted(() => {
-  // 延迟开始打字效果
-  setTimeout(() => {
-    typeWriter()
-  }, 500)
+onMounted(async () => {
+  await nextTick()
+  
+  // 监听文案变化，确保国际化加载完成后再开始打字
+  const startTyping = () => {
+    if (splashTexts.value.length > 0 && displayedText.value === '') {
+      // 延迟开始打字效果
+      setTimeout(() => {
+        typeWriter()
+      }, 500)
+    }
+  }
+  
+  // 立即检查一次
+  startTyping()
+  
+  // 监听文案和语言变化
+  watch([splashTexts, locale], () => {
+    if (displayedText.value === '' && splashTexts.value.length > 0) {
+      startTyping()
+    }
+  })
 })
 </script>
 
@@ -144,7 +166,8 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 80%, transparent) 100%);
+  /* 浅色模式：使用白色背景，与主页保持一致 */
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,12 +194,13 @@ onMounted(() => {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--surface);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
   animation: logoRotate 3s ease-in-out infinite;
 }
 
@@ -198,9 +222,8 @@ onMounted(() => {
 .splash-text {
   font-size: 28px;
   font-weight: 400;
-  color: white;
+  color: var(--text-primary);
   line-height: 1.8;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   margin: 0;
   letter-spacing: 1px;
 }
@@ -208,7 +231,7 @@ onMounted(() => {
 .cursor {
   display: inline-block;
   margin-left: 4px;
-  color: white;
+  color: var(--brand);
   font-weight: 300;
   animation: blink 1s infinite;
 }
@@ -219,7 +242,7 @@ onMounted(() => {
 
 .splash-hint {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   opacity: 0;
   transition: opacity 0.5s ease-out;
   margin-top: 32px;
@@ -244,8 +267,25 @@ onMounted(() => {
 .bg-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  filter: blur(60px);
+  opacity: 0.3;
   animation: float 8s ease-in-out infinite;
+}
+
+.bg-circle-1 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-circle-2 {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.bg-circle-3 {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.bg-circle-4 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .bg-circle-1 {
@@ -295,9 +335,11 @@ onMounted(() => {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--brand);
   border-radius: 50%;
+  opacity: 0.6;
   animation: particleFloat linear infinite;
+  box-shadow: 0 0 6px currentColor;
 }
 
 /* 动画定义 */
@@ -404,16 +446,19 @@ onMounted(() => {
 
 /* 暗色主题适配 */
 .dark .splash-page {
-  background: linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 60%, #000000) 100%);
+  /* 暗色模式：使用深色背景，与主页保持一致 */
+  background: var(--bg);
 }
 
 .dark .logo-circle {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  /* 暗色模式下使用深色背景 */
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 .dark .logo-text {
-  color: white;
+  /* 暗色模式下文字使用品牌色（浅色） */
+  color: var(--brand);
 }
 
 /* 响应式设计 */
