@@ -57,7 +57,8 @@ const handleTocClick = (e: Event, itemId: string) => {
 <style scoped>
 .toc {
   position: sticky;
-  top: 100px;
+  top: 80px; /* 固定在顶部，距离顶部 80px（导航栏高度 + 间距） */
+  align-self: start; /* 确保从顶部开始对齐 */
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -65,6 +66,36 @@ const handleTocClick = (e: Event, itemId: string) => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: calc(100vh - 100px); /* 最大高度为视口高度减去顶部空间 */
+  overflow-y: auto; /* 内容超出时显示滚动条 */
+  overflow-x: hidden;
+  z-index: 10; /* 确保在其他内容之上 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+/* 滚动条样式 */
+.toc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox 滚动条样式 */
+.toc {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .toc-title {
