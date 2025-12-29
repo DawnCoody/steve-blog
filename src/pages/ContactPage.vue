@@ -32,7 +32,7 @@ const contactMethods = computed(() => [
     icon: '💻',
     label: t('contact.github'),
     value: t('contact.githubLabel'),
-    link: 'https://github.com/steve-blog', // 直接使用，避免 i18n 解析
+    link: 'https://bgithub.xyz/stevehe-git', // 直接使用，避免 i18n 解析
     color: 'linear-gradient(135deg, #24292e 0%, #586069 100%)',
     external: true
   },
