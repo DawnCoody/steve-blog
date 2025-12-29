@@ -28,7 +28,6 @@ const previewMode = ref<'edit' | 'preview' | 'split'>('edit')
 // Markdown 实时预览
 const previewContent = useArticleMarkdown(computed(() => props.modelValue))
 const previewContainerRef = ref<HTMLElement>()
-const editorRef = ref<HTMLTextAreaElement>()
 
 // 使用 composables 处理预览内容
 const { addCopyButtons: addPreviewCopyButtons } = useCodeCopy(previewContainerRef, (key: string) => {
