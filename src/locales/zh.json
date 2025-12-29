@@ -158,7 +158,11 @@
     "comments": "评论",
     "reward": "打赏",
     "minute": "分钟",
-    "seconds": "秒"
+    "seconds": "秒",
+    "editMode": "编辑",
+    "previewMode": "预览",
+    "splitMode": "分屏",
+    "previewEmpty": "开始输入内容，预览将在这里显示..."
   },
   "toc": {
     "title": "目录"

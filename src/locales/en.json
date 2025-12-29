@@ -158,7 +158,11 @@
     "comments": "Comments",
     "reward": "Reward",
     "minute": "minute",
-    "seconds": "seconds"
+    "seconds": "seconds",
+    "editMode": "Edit",
+    "previewMode": "Preview",
+    "splitMode": "Split",
+    "previewEmpty": "Start typing, preview will appear here..."
   },
   "toc": {
     "title": "Table of Contents"
