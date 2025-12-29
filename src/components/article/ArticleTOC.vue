@@ -48,8 +48,8 @@ const handleTocClick = (e: Event, itemId: string) => {
       behavior: 'smooth'
     })
     
-    // 更新 URL hash（不触发滚动）
-    history.replaceState(null, '', `#${itemId}`)
+    // 更新 URL hash（不触发滚动），保留现有的 history state
+    history.replaceState(history.state, '', `#${itemId}`)
   }
 }
 
