@@ -187,7 +187,6 @@ export const useArticleEditor = () => {
   /**
    * 提交表单（创建或更新文章）
    * @returns 保存的文章对象，如果验证失败则返回 null
-   * @deprecated 此函数已废弃，请使用 handlePublish 或 handleUpdate
    */
   const handleSubmit = async (): Promise<Article | null> => {
     const errors = validateForm()
@@ -201,7 +200,7 @@ export const useArticleEditor = () => {
       title: form.title || '',
       description: form.description || '',
       content: form.content || '',
-      categoryKey: form.categoryKey || 'dit',
+      categoryKey: form.categoryKey || defaultCategoryKey,
       tag: form.tag || '',
       badge: form.badge,
       date: (form.date || new Date().toISOString().split('T')[0]) as string,
