@@ -39,7 +39,7 @@ const handleTocClick = (e: Event, itemId: string) => {
   const targetElement = document.getElementById(itemId)
   if (targetElement) {
     // 计算偏移量（导航栏高度 + 一些额外间距）
-    const offset = 100
+    const offset = 10
     const elementPosition = targetElement.getBoundingClientRect().top
     const offsetPosition = elementPosition + window.pageYOffset - offset
 
