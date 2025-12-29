@@ -113,7 +113,6 @@
     "tagPlaceholder": "Enter tag",
     "date": "Created Date",
     "created": "Created",
-    "updated": "Updated",
     "updatedDate": "Updated Date",
     "optional": "Optional",
     "platform": "Platform",
@@ -222,6 +221,16 @@
     "title": "Tag Cloud",
     "subtitle": "Click on a tag to view all articles in that category",
     "empty": "No category tags available"
+  },
+  "warnings": {
+    "validationError": "Please fill in the following required fields:",
+    "saveFailed": "Save failed, please try again",
+    "loadFailed": "Load failed, please try again",
+    "operationFailed": "Operation failed, please try again later",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+    "deleteConfirm": "Are you sure you want to delete? This action cannot be undone",
+    "networkError": "Network error, please check your connection",
+    "unknownError": "An unknown error occurred, please try again later"
   }
 }
 

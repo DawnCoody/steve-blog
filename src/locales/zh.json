@@ -113,7 +113,6 @@
     "tagPlaceholder": "请输入标签",
     "date": "创建日期",
     "created": "创建",
-    "updated": "更新",
     "updatedDate": "更新日期",
     "optional": "可选",
     "platform": "发布平台",
@@ -222,6 +221,16 @@
     "title": "标签云",
     "subtitle": "点击标签查看该分类下的所有文章",
     "empty": "暂无分类标签"
+  },
+  "warnings": {
+    "validationError": "请填写以下必填字段：",
+    "saveFailed": "保存失败，请重试",
+    "loadFailed": "加载失败，请重试",
+    "operationFailed": "操作失败，请稍后重试",
+    "unsavedChanges": "您有未保存的更改，确定要离开吗？",
+    "deleteConfirm": "确定要删除吗？此操作不可撤销",
+    "networkError": "网络错误，请检查网络连接",
+    "unknownError": "发生未知错误，请稍后重试"
   }
 }
 
