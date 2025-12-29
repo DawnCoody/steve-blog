@@ -21,27 +21,32 @@
 - 📚 **文章分类** - 支持文章分类筛选和排序功能
 - 🔗 **目录导航** - 文章详情页自动生成目录，支持锚点跳转和滚动联动高亮
 - 🔍 **文章搜索** - 支持全文搜索，实时高亮匹配结果
-- ✏️ **文章编辑** - 支持创建和编辑文章，提供封面预设和表单验证
-- 📊 **图表支持** - 支持 Mermaid 图表和 Flowchart.js 流程图渲染
+- ✏️ **文章编辑** - 支持创建和编辑文章，使用 File System Access API 直接保存为 Markdown 文件，提供封面预设和表单验证
+- 📊 **图表支持** - 支持 Mermaid 图表和 Flowchart.js 流程图渲染，支持横向和纵向滚动
 - 🧮 **数学公式** - 支持 LaTeX 数学公式渲染（行内和块级）
-- 📋 **代码高亮** - 支持多种编程语言的语法高亮，提供一键复制功能
-- 🎯 **浮动操作按钮** - 提供快速访问常用功能（主题切换、语言切换、布局切换等），支持 hover 提示
+- 📋 **代码高亮** - 支持多种编程语言的语法高亮，提供一键复制功能，支持横向和纵向滚动
+- 🎯 **浮动操作按钮** - 提供快速访问常用功能（主题切换、语言切换、布局切换、阅读模式等），支持 hover 提示
+- 📖 **阅读模式** - 专注阅读模式，隐藏导航和侧边栏，提供沉浸式阅读体验
+- 📐 **文章视图切换** - 支持列表视图和时间轴视图两种文章展示方式
+- 🎨 **布局切换** - 支持单栏/双栏布局切换，单栏布局自动隐藏目录
+- 📜 **内容滚动优化** - 代码块、图表容器支持横向和纵向滚动，防止内容溢出屏幕
 
 ## 🛠️ 技术栈
 
 | 技术 | 版本 | 说明 |
 |:--------|:-------------|:---------------------|
-| Vue | 3.5+ | 核心前端框架，基于 Composition API 构建 |
-| TypeScript | 5.9+ | 类型安全开发，提升代码可维护性与可读性 |
-| Vite | 7.2+ | 下一代构建工具，实现快速热更新与优化构建 |
-| Pinia | 3.0+ | Vue 官方状态管理库，替代 Vuex，简化状态管理 |
-| Vue Router | 4.6+ | 路由管理，支持动态路由、路由守卫与权限控制 |
-| vue-i18n | 9.14+ | 国际化解决方案，支持语言切换、占位符插值、复数处理 |
-| markdown-it | 14.1+ | Markdown 解析器，支持插件扩展，用于文章内容渲染 |
-| highlight.js | 11.10+ | 代码语法高亮库，支持多种编程语言，集成到 markdown-it 中 |
-| katex | 0.16+ | LaTeX 数学公式渲染库，快速、轻量级，支持行内和块级公式 |
-| mermaid | 11.12+ | 图表和流程图渲染库，支持流程图、时序图、类图等多种图表类型 |
-| flowchart.js | 1.18+ | 流程图渲染库，支持简单的流程图绘制 |
+| Vue | 3.5.24 | 核心前端框架，基于 Composition API 构建 |
+| TypeScript | 5.9.3 | 类型安全开发，提升代码可维护性与可读性 |
+| Vite | 7.2.4 | 下一代构建工具，实现快速热更新与优化构建 |
+| Pinia | 3.0.4 | Vue 官方状态管理库，替代 Vuex，简化状态管理 |
+| Vue Router | 4.6.4 | 路由管理，支持动态路由、路由守卫与权限控制 |
+| vue-i18n | 9.14.5 | 国际化解决方案，支持语言切换、占位符插值、复数处理 |
+| markdown-it | 14.1.0 | Markdown 解析器，支持插件扩展，用于文章内容渲染 |
+| highlight.js | 11.10.0 | 代码语法高亮库，支持多种编程语言，集成到 markdown-it 中 |
+| katex | 0.16.27 | LaTeX 数学公式渲染库，快速、轻量级，支持行内和块级公式 |
+| mermaid | 11.12.2 | 图表和流程图渲染库，支持流程图、时序图、类图等多种图表类型 |
+| flowchart.js | 1.18.0 | 流程图渲染库，支持简单的流程图绘制 |
+| nanoid | 5.1.6 | 轻量级唯一 ID 生成库，用于文章 ID 生成 |
 
 ## 🚀 快速开始
 
@@ -147,12 +152,14 @@ npm run preview
 ---
 title: 文章标题
 description: 文章描述
-categoryKey: dit
-tag: DiT
+categoryKey: c/c++
+tag: C++
 badge: New
 date: 2025-12-16
+updatedDate: 2025-12-17
 platform: Wechat
-cover: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+cover: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+articleId: 65a71ab1-e1ce-479c-be0c-f1dd21255a1e
 ---
 
 # 文章内容
@@ -162,14 +169,16 @@ cover: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 
 **Frontmatter 字段说明：**
 
-- `title`: 文章标题（可选，如未提供则从文件名提取）
-- `description`: 文章描述（可选，如未提供则从内容第一段提取）
-- `categoryKey`: 文章分类（从国际化配置动态加载，如 `c/c++`, `linux`, `ROS`, `中间件`, `apollo` 等），默认：`c/c++`
-- `tag`: 文章标签
+- `title`: 文章标题（必填，如未提供则从文件名提取）
+- `description`: 文章描述（必填，如未提供则从内容第一段提取）
+- `categoryKey`: 文章分类（必填，从国际化配置动态加载，如 `c/c++`, `linux`, `ROS`, `中间件`, `apollo` 等），默认：`c/c++`
+- `tag`: 文章标签（必填）
 - `badge`: 可选徽章（如 "Beta", "New" 等）
-- `date`: 发布日期（YYYY-MM-DD 格式，可选，如未提供则从文件名提取或使用当前日期）
-- `platform`: 发布平台，默认：Wechat
-- `cover`: 封面背景（支持 CSS 渐变如 `linear-gradient(...)` 或图片 URL/base64 如 `data:image/...`）
+- `date`: 创建日期（必填，YYYY-MM-DD 格式，如未提供则从文件名提取或使用当前日期）
+- `updatedDate`: 更新日期（可选，YYYY-MM-DD 格式）
+- `platform`: 发布平台（必填，默认：Wechat）
+- `cover`: 封面背景（必填，支持 CSS 渐变如 `"linear-gradient(...)"` 或图片 URL/base64 如 `data:image/...`，建议使用引号包裹）
+- `articleId`: 文章唯一标识（可选，UUID 格式，系统会自动生成，用于文章编辑时识别文件）
 
 **文件名格式：**
 
@@ -191,9 +200,28 @@ cover: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 
 **文章操作：**
 
-- 创建文章：访问 `/articles/new` 或点击"新建文章"按钮，创建后保存为 Markdown 文件
-- 编辑文章：在文章详情页点击"编辑"按钮，或访问 `/articles/:id/edit`，编辑后更新 Markdown 文件
-- 文章以 Markdown 文件形式存储在 `content/` 目录下
+- **创建文章**：访问 `/articles/new` 或点击"新建文章"按钮
+  - 填写文章信息（标题、描述、分类、标签、日期等）
+  - 选择或上传封面图片（支持 base64 格式，最大 5MB）
+  - 输入 Markdown 内容
+  - 点击"发布"按钮，使用文件保存对话框保存为 Markdown 文件
+  - 文件自动保存到用户选择的目录（建议保存到项目的 `content/` 目录）
+
+- **编辑文章**：在文章详情页点击"编辑"按钮，或访问 `/articles/:id/edit`
+  - 修改文章信息
+  - 更新 Markdown 内容
+  - 点击"更新"按钮，直接更新对应的 Markdown 文件（无感触发，无需重新选择文件）
+
+**技术特性：**
+
+- ✅ 使用 **File System Access API**（需要 Chrome、Edge 或 Opera 浏览器）
+- ✅ 支持文件保存对话框，用户可选择保存位置
+- ✅ 编辑模式下自动记住文件位置，更新时无需重新选择
+- ✅ 自动生成文件名（基于文章标题和日期）
+- ✅ 支持自定义文件名
+- ✅ 表单验证（标题、描述、内容、分类、标签、日期、平台、封面必填）
+- ✅ 封面图片上传（支持 base64 格式，最大 5MB）
+- ✅ 封面预设（6 种 CSS 渐变背景）
 
 ### 如何将 Markdown 文档显示在博客系统中
 
@@ -219,15 +247,30 @@ cover: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
    description: 文章描述
    categoryKey: c/c++
    tag: 标签
+   badge: New
    date: 2025-12-17
+   updatedDate: 2025-12-18
    platform: Wechat
-   cover: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+   cover: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+   articleId: 65a71ab1-e1ce-479c-be0c-f1dd21255a1e
    ---
    
    # 你的文章内容
    
    这里是 Markdown 内容...
    ```
+   
+   **Frontmatter 字段说明：**
+   - `title`: 文章标题（必填）
+   - `description`: 文章描述（必填）
+   - `categoryKey`: 文章分类（必填，从国际化配置动态加载，如 `c/c++`, `linux`, `ROS`, `中间件`, `apollo` 等）
+   - `tag`: 文章标签（必填）
+   - `badge`: 可选徽章（如 "New", "Beta" 等）
+   - `date`: 创建日期（必填，YYYY-MM-DD 格式）
+   - `updatedDate`: 更新日期（可选，YYYY-MM-DD 格式）
+   - `platform`: 发布平台（必填，默认：Wechat）
+   - `cover`: 封面背景（必填，支持 CSS 渐变如 `"linear-gradient(...)"` 或图片 URL/base64，建议使用引号包裹）
+   - `articleId`: 文章唯一标识（可选，UUID 格式，系统会自动生成）
 
 4. **重启开发服务器**
    ```bash
@@ -383,6 +426,12 @@ sequenceDiagram
 - `mindmap` - 思维导图
 - `timeline` - 时间线
 
+**图表特性：**
+- ✅ 自动识别 `language-mermaid` 等格式，避免被当作普通代码处理
+- ✅ 支持主题切换（深色/浅色模式自动适配）
+- ✅ 支持横向和纵向滚动（最大高度 600px）
+- ✅ 响应式宽度，自动适应容器
+
 #### Flowchart.js 流程图支持
 
 项目支持 Flowchart.js 流程图渲染，可以在 Markdown 中使用以下代码块语法：
@@ -406,6 +455,12 @@ cond(no)->op
 - `cond=>condition: 条件判断` - 条件节点
 - `io=>inputoutput: 输入输出` - 输入输出节点
 - `sub=>subroutine: 子程序` - 子程序节点
+
+**流程图特性：**
+- ✅ 自动识别 `language-flowchart` 等格式，避免被当作普通代码处理
+- ✅ 支持主题切换（深色/浅色模式自动适配）
+- ✅ 支持横向和纵向滚动（最大高度 600px）
+- ✅ 响应式宽度，自动适应容器
 
 更多语法请参考 [Flowchart.js 官方文档](https://flowchart.js.org/)。
 
@@ -443,6 +498,54 @@ cond(no)->op
 - **布局适配**：单栏布局时自动隐藏目录，双栏布局时显示在右侧
 - **响应式设计**：移动端自动隐藏目录，桌面端显示
 
+### 阅读模式
+
+项目支持专注阅读模式，提供沉浸式阅读体验：
+
+- **进入阅读模式**：点击浮动操作按钮中的阅读模式按钮，或使用快捷键
+- **阅读模式特性**：
+  - 隐藏导航栏和侧边栏
+  - 隐藏文章卡片的多余元素（封面、标签、元信息等）
+  - 优化内容区域布局，最大宽度 800px，居中显示
+  - 增大字体和行高，提升阅读体验
+  - 隐藏评论区域（可选）
+  - 提供"退出阅读模式"按钮，随时退出
+- **响应式优化**：阅读模式下移动端自动调整字体大小和间距
+
+### 文章视图和布局
+
+项目支持多种文章展示方式：
+
+- **视图模式切换**：
+  - **列表视图**：卡片式布局，展示文章封面、标题、描述等信息
+  - **时间轴视图**：按年份分组，时间轴式展示，适合按时间浏览文章
+  - 通过浮动操作按钮切换视图模式，自动保存用户偏好
+
+- **布局切换**：
+  - **单栏布局**：文章内容全宽显示，自动隐藏目录
+  - **双栏布局**：文章内容 + 目录导航，适合长文章阅读
+  - 通过浮动操作按钮切换布局，自动保存用户偏好
+
+### 内容滚动优化
+
+项目对代码块、图表容器等进行了滚动优化：
+
+- **代码块滚动**：
+  - 支持横向滚动（长代码行）
+  - 支持纵向滚动（代码块高度超过 500px 时）
+  - 自定义滚动条样式，适配深色/浅色主题
+  - 响应式宽度，自动适应容器宽度
+
+- **图表容器滚动**：
+  - Mermaid 图表容器支持横向和纵向滚动（最大高度 600px）
+  - Flowchart 流程图容器支持横向和纵向滚动（最大高度 600px）
+  - 自定义滚动条样式
+
+- **内容宽度优化**：
+  - `.content-block` 容器自动适应父容器宽度，不会超出屏幕
+  - 防止横向溢出，确保所有内容在屏幕范围内显示
+  - 支持内容换行，提升移动端体验
+
 ### 文章搜索
 
 项目支持全文搜索功能，可以搜索文章标题、描述、内容、标签和分类。
@@ -458,73 +561,87 @@ cond(no)->op
 ```
 steve-blog/
 ├── content/              # Markdown 文章文件目录
-│   ├── example.md        # 示例文章
-│   └── example1.md        # 示例文章
+│   ├── 2025-12-22-mardown.md
+│   ├── 2025-12-25-yolo.md
+│   ├── 2025-12-27-swap.md
+│   └── 2025-12-28-超长文本.md
+├── dist/                 # 构建输出目录（生产环境）
+│   ├── assets/           # 打包后的静态资源
+│   ├── content/          # 构建时复制的文章文件
+│   ├── 404.html          # 404错误页面
+│   ├── blog.svg          # 网站图标
+│   └── index.html        # 入口 HTML
 ├── image/                # 项目效果截图目录
-│   ├── splash.png        # 开机动画页效果截图
-│   ├── home.png          # 首页效果截图
 │   ├── articles.png      # 文章列表页效果截图
+│   ├── contact.png       # 联系页效果截图
 │   ├── detail.png        # 文章详情页效果截图
 │   ├── edit.png          # 文章编辑页效果截图
-│   └── contact.png       # 联系页效果截图
-├── public/               # 静态资源（不会被Vite处理）
+│   └── home.png          # 首页效果截图
+├── public/               # 静态资源（不会被Vite处理，直接复制到dist）
 │   ├── 404.html          # 404错误页面
 │   └── blog.svg          # 网站图标
 ├── src/
 │   ├── assets/           # 静态资源（图片、样式、字体等，会被Vite处理）
 │   │   └── vue.svg       # Vue Logo
-│   ├── components/      # 通用组件
+│   ├── components/       # 通用组件
 │   │   ├── article/      # 文章相关组件
 │   │   │   ├── ArticleHeader.vue      # 文章头部组件（标题、元信息、操作按钮）
-│   │   │   ├── ArticleContent.vue     # 文章内容组件（Markdown渲染、代码高亮）
-│   │   │   ├── ArticleTOC.vue         # 目录导航组件（自动生成目录，支持滚动联动高亮）
-│   │   │   └── CommentSection.vue     # 评论区域组件（评论列表、添加评论）
+│   │   │   ├── ArticleContent.vue      # 文章内容组件（Markdown渲染、代码高亮）
+│   │   │   ├── ArticleTOC.vue           # 目录导航组件（自动生成目录，支持滚动联动高亮）
+│   │   │   ├── CodeBlock.vue           # 代码块组件（代码高亮、一键复制）
+│   │   │   └── CommentSection.vue      # 评论区域组件（评论列表、添加评论）
 │   │   ├── home/         # 首页相关组件
-│   │   │   ├── Section.vue           # 通用区块组件（带滚动动画）
-│   │   │   ├── Card.vue               # 通用卡片组件（支持多种动画类型）
-│   │   │   ├── SkillCategory.vue      # 技能分类组件
-│   │   │   ├── ProjectCard.vue        # 项目卡片组件
-│   │   │   └── EducationCard.vue       # 教育经历卡片组件
-│   │   └── FloatingActionButtons.vue  # 浮动操作按钮组件（主题切换、语言切换、布局切换等）
+│   │   │   ├── Section.vue             # 通用区块组件（带滚动动画）
+│   │   │   ├── Card.vue                # 通用卡片组件（支持多种动画类型）
+│   │   │   ├── SkillCategory.vue       # 技能分类组件
+│   │   │   ├── ProjectCard.vue         # 项目卡片组件
+│   │   │   └── EducationCard.vue        # 教育经历卡片组件
+│   │   ├── ArticleListView.vue         # 文章列表视图组件
+│   │   ├── TimelineView.vue             # 时间轴视图组件
+│   │   ├── Pagination.vue               # 分页组件
+│   │   └── FloatingActionButtons.vue   # 浮动操作按钮组件（主题切换、语言切换、布局切换、阅读模式等）
 │   ├── composables/      # 组合式函数（逻辑复用）
-│   │   ├── useArticleMarkdown.ts      # Markdown 解析逻辑
-│   │   ├── useArticleComments.ts      # 评论管理逻辑
-│   │   ├── useArticleEditor.ts        # 文章编辑逻辑（创建、更新、验证）
-│   │   ├── useArticleSearch.ts        # 文章搜索逻辑（全文搜索、高亮）
-│   │   ├── useCategories.ts           # 分类管理逻辑（从国际化配置动态加载）
-│   │   ├── useCodeCopy.ts             # 代码复制功能
-│   │   ├── useMermaidRenderer.ts      # Mermaid 图表渲染
-│   │   └── useFlowchartRenderer.ts    # Flowchart 流程图渲染
+│   │   ├── useArticleMarkdown.ts       # Markdown 解析逻辑（代码高亮、数学公式、图表识别）
+│   │   ├── useArticleComments.ts       # 评论管理逻辑（本地存储）
+│   │   ├── useArticleEditor.ts         # 文章编辑逻辑（创建、更新、验证、File System Access API）
+│   │   ├── useArticleSearch.ts         # 文章搜索逻辑（全文搜索、高亮）
+│   │   ├── useCategories.ts            # 分类管理逻辑（从国际化配置动态加载）
+│   │   ├── useCodeCopy.ts              # 代码复制功能
+│   │   ├── useMermaidRenderer.ts       # Mermaid 图表渲染（主题适配、重新渲染）
+│   │   └── useFlowchartRenderer.ts     # Flowchart 流程图渲染（主题适配、重新渲染）
 │   ├── data/            # 数据文件
-│   │   ├── types.ts     # 文章类型定义
-│   │   ├── contentArticles.ts # 内容文章管理（Markdown文件）
-│   │   └── index.ts     # 统一导出和合并接口
+│   │   ├── types.ts                    # 文章类型定义
+│   │   ├── contentArticles.ts          # 内容文章管理（Markdown文件加载）
+│   │   └── index.ts                    # 统一导出和合并接口
 │   ├── locales/         # 国际化语言文件
-│   │   ├── zh.json      # 中文语言包
-│   │   └── en.json      # 英文语言包
+│   │   ├── zh.json                     # 中文语言包
+│   │   └── en.json                      # 英文语言包
 │   ├── pages/           # 页面组件
-│   │   ├── SplashPage.vue       # 开机动画页（文艺文案、动态打字机效果）
-│   │   ├── HomePage.vue         # 首页
-│   │   ├── ArticlesPage.vue     # 文章列表页（分类筛选、搜索、排序）
-│   │   ├── ArticleDetailPage.vue # 文章详情页（内容展示、评论、导航）
-│   │   ├── ArticleEditPage.vue  # 文章编辑页（创建/编辑文章）
-│   │   └── ContactPage.vue      # 联系页
+│   │   ├── SplashPage.vue              # 开机动画页（文艺文案、动态打字机效果）
+│   │   ├── HomePage.vue                # 首页（个人介绍、技能、项目、教育）
+│   │   ├── ArticlesPage.vue            # 文章列表页（分类筛选、搜索、排序、视图切换）
+│   │   ├── ArticleDetailPage.vue        # 文章详情页（内容展示、评论、导航、阅读模式）
+│   │   ├── ArticleEditPage.vue         # 文章编辑页（创建/编辑文章、表单验证）
+│   │   └── ContactPage.vue             # 联系页（联系方式展示）
 │   ├── router/          # 路由配置
-│   │   └── index.ts    # 路由定义（路径、组件、重定向）
+│   │   └── index.ts                    # 路由定义（路径、组件、重定向）
 │   ├── store/           # Pinia状态管理
 │   │   ├── modules/     # 模块状态
-│   │   │   └── app.ts   # 应用状态（主题切换）
-│   │   └── index.ts    # Pinia实例创建
+│   │   │   └── app.ts                  # 应用状态（主题切换、视图模式、布局、阅读模式）
+│   │   └── index.ts                    # Pinia实例创建
+│   ├── styles/          # 样式文件
+│   │   └── markdown-content.css        # Markdown 内容样式（代码块、表格、图表、滚动优化）
 │   ├── utils/           # 工具函数
-│   │   ├── html.ts     # HTML转义工具（XSS防护）
-│   │   ├── frontmatter.ts  # Frontmatter 解析工具
-│   │   ├── markdownLoader.ts  # Markdown 文件加载器
-│   │   ├── markdownExporter.ts  # Markdown 文件导出工具
-│   │   └── coverStyle.ts  # 封面样式工具（处理CSS渐变和图片）
+│   │   ├── html.ts                     # HTML转义工具（XSS防护）
+│   │   ├── frontmatter.ts              # Frontmatter 解析工具
+│   │   ├── markdownLoader.ts           # Markdown 文件加载器
+│   │   ├── markdownExporter.ts         # Markdown 文件导出工具
+│   │   └── coverStyle.ts               # 封面样式工具（处理CSS渐变和图片）
 │   ├── App.vue          # 根组件（导航栏、路由视图、主题切换）
 │   ├── main.ts          # 入口文件（初始化Vue、路由、Pinia、i18n）
 │   ├── i18n.ts          # 国际化配置
-│   └── style.css        # 全局样式（主题变量、布局、组件样式）
+│   ├── style.css        # 全局样式（主题变量、布局、组件样式、阅读模式）
+│   └── vite-env.d.ts    # Vite 类型声明文件
 ├── vite-plugin-copy-content.ts  # Vite 插件：构建时复制 content 目录
 ├── vite-env.d.ts        # Vite 类型声明文件（@vitejs/plugin-vue 类型定义）
 ├── .eslintrc.js         # ESLint配置（代码规范）
@@ -659,6 +776,13 @@ steve-blog/
 - [x] 目录滚动联动（TOC）- 滚动时自动高亮当前标题，TOC 自动滚动
 - [x] 浮动按钮 Tooltip - 所有浮动按钮支持 hover 提示，国际化显示
 - [x] 文章布局切换 - 支持单栏/双栏布局切换，单栏布局自动隐藏 TOC
+- [x] 阅读模式 - 专注阅读模式，隐藏导航和侧边栏，提供沉浸式阅读体验
+- [x] 文章视图切换 - 支持列表视图和时间轴视图两种展示方式
+- [x] 代码块滚动优化 - 支持横向和纵向滚动，防止内容溢出
+- [x] 图表容器滚动优化 - Mermaid 和 Flowchart 容器支持横向和纵向滚动
+- [x] 内容宽度优化 - 防止内容超出屏幕宽度，响应式适配
+- [x] File System Access API - 文章编辑直接保存为 Markdown 文件
+- [x] 文章编辑无感更新 - 编辑模式下自动记住文件位置，更新时无需重新选择
 
 ### 待实现功能
 
