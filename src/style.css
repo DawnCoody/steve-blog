@@ -580,7 +580,7 @@ body.reading-mode .detail-grid .toc {
   }
 
   body.reading-mode .article-area {
-    max-width: 100%;
+    max-width: 800px;
     padding: 0;
   }
 

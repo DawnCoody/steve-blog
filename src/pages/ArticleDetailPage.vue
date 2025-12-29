@@ -184,6 +184,10 @@ onMounted(() => {
   grid-template-columns: 1fr 240px;
   gap: 16px;
   align-items: start;
+  /* 确保不超出父容器宽度 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* 单栏布局：隐藏 TOC */
@@ -204,6 +208,11 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  /* 确保不超出父容器宽度 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0; /* 允许 flex 子元素缩小 */
 }
 
 .empty-state {

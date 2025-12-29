@@ -12,6 +12,17 @@
   background: var(--surface-2);
   line-height: 1.7;
   color: var(--text-primary);
+  /* 确保不超出父容器宽度 */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* 允许缩小到小于内容宽度 */
+  box-sizing: border-box;
+  /* 防止横向溢出，允许纵向滚动 */
+  overflow-x: hidden;
+  overflow-y: visible;
+  /* 确保内容可以正常换行 */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .content-block p {
@@ -153,9 +164,10 @@
   overflow: auto;
   /* 设置最大高度，超出时显示滚动条 */
   max-height: 500px;
-  /* 确保宽度限制 */
+  /* 确保宽度响应式适应容器 */
   width: 100%;
   max-width: 100%;
+  min-width: 0; /* 允许缩小到小于内容宽度 */
   box-sizing: border-box;
   /* 滚动条样式 */
   scrollbar-width: thin;
@@ -181,10 +193,10 @@
   word-break: normal;
   overflow-wrap: normal;
   color: inherit;
-  /* 确保代码内容可以超出容器宽度 */
+  /* 确保代码内容可以超出容器宽度，但允许容器缩小 */
   width: auto;
   max-width: none;
-  min-width: max-content;
+  min-width: 0; /* 允许缩小，配合 pre 容器的 overflow 实现滚动 */
   box-sizing: content-box;
   /* code 元素不设置 overflow，让 pre 元素处理滚动 */
   overflow: visible;
@@ -314,6 +326,9 @@
   overflow: hidden;
   display: table;
   background: var(--surface);
+  /* 确保表格不会超出容器，但允许内容过宽时横向滚动 */
+  max-width: 100%;
+  table-layout: auto;
 }
 
 .content-block table th,

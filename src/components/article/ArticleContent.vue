@@ -180,10 +180,21 @@ watch(() => appStore.isDark, () => {
   background: var(--surface);
   box-shadow: var(--shadow);
   position: relative;
+  /* 确保不超出父容器宽度 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .detail-card .card-body {
   padding: 20px;
+  /* 确保不超出父容器宽度 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* 防止内容溢出 */
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .detail-card .card-cover {
