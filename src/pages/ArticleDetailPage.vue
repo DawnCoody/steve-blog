@@ -4,13 +4,14 @@
  * 功能：文章内容展示、Markdown 渲染、目录导航、评论、上一篇/下一篇导航
  */
 
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/store/modules/app'
 import { articles, getArticleById } from '@/data'
 import { useArticleMarkdown } from '@/composables/useArticleMarkdown'
 import { useArticleComments } from '@/composables/useArticleComments'
+import { incrementArticleViews } from '@/utils/articleStats'
 import ArticleHeader from '@/components/article/ArticleHeader.vue'
 import ArticleContent from '@/components/article/ArticleContent.vue'
 import ArticleTOC from '@/components/article/ArticleTOC.vue'
@@ -119,9 +120,15 @@ const exitReadingMode = () => {
   appStore.toggleReadingMode()
 }
 
-// 组件挂载时加载评论数据
-onMounted(() => {
+// 组件挂载时加载评论数据和增加阅读量
+onMounted(async () => {
   loadComments()
+  // 增加文章阅读量
+  if (article.value) {
+    incrementArticleViews(article.value.id)
+    // 等待下一帧，确保 localStorage 更新后组件能响应
+    await nextTick()
+  }
 })
 </script>
 

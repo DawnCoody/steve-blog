@@ -148,7 +148,13 @@
     "back": "Back",
     "exitReadingMode": "Exit Reading Mode",
     "prevArticle": "Previous",
-    "nextArticle": "Next"
+    "nextArticle": "Next",
+    "published": "Published",
+    "updated": "Updated",
+    "wordCount": "Word Count",
+    "readingTime": "Reading Time",
+    "views": "Views",
+    "minute": "minute"
   },
   "toc": {
     "title": "Table of Contents"
