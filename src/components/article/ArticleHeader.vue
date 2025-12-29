@@ -4,11 +4,15 @@ import type { Article } from '@/data/types'
 
 defineProps<{
   article: Article | null
+  prevArticle?: Article | null
+  nextArticle?: Article | null
 }>()
 
 const emit = defineEmits<{
   goBack: []
   edit: []
+  goPrev: []
+  goNext: []
 }>()
 
 const { t } = useI18n()
@@ -19,6 +23,24 @@ const { t } = useI18n()
     <div class="header-actions">
       <button class="back-btn" type="button" @click="emit('goBack')">← {{ t('article.back') }}</button>
       <button v-if="article" class="edit-btn" type="button" @click="emit('edit')">✎ {{ t('article.edit') }}</button>
+      <div class="nav-actions">
+        <button 
+          class="nav-btn" 
+          type="button" 
+          :disabled="!prevArticle" 
+          @click="emit('goPrev')"
+        >
+          ← {{ t('article.prevArticle') }}
+        </button>
+        <button 
+          class="nav-btn" 
+          type="button" 
+          :disabled="!nextArticle" 
+          @click="emit('goNext')"
+        >
+          {{ t('article.nextArticle') }} →
+        </button>
+      </div>
     </div>
     <div class="title-area" v-if="article">
       <span class="badge" v-if="article.badge">{{ article.badge }}</span>
@@ -50,6 +72,13 @@ const { t } = useI18n()
 }
 
 .header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-actions {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -106,6 +135,46 @@ const { t } = useI18n()
   color: var(--tag-text);
   font-size: 12px;
   font-weight: 700;
+}
+
+.nav-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.nav-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--border), transparent 20%);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .nav-btn {
+    flex: 1;
+  }
 }
 </style>
 

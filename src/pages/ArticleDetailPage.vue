@@ -139,7 +139,15 @@ onMounted(() => {
       <span class="exit-text">{{ t('article.exitReadingMode') }}</span>
     </button>
 
-    <ArticleHeader :article="article" @go-back="goBack" @edit="goEdit" />
+    <ArticleHeader 
+      :article="article" 
+      :prev-article="prevArticle ?? null"
+      :next-article="nextArticle ?? null"
+      @go-back="goBack" 
+      @edit="goEdit"
+      @go-prev="goPrev"
+      @go-next="goNext"
+    />
 
     <section class="article-area">
       <div class="detail-grid" :class="`layout-${appStore.articleLayout}`" v-if="article">
@@ -147,10 +155,6 @@ onMounted(() => {
           <ArticleContent
             :article="article"
             :html-content="rendered.html"
-            :prev-article="prevArticle ?? null"
-            :next-article="nextArticle ?? null"
-            @go-prev="goPrev"
-            @go-next="goNext"
           />
           <CommentSection
             :comments="activeComments"

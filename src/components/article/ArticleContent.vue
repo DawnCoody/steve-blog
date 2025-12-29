@@ -20,13 +20,6 @@ const appStore = useAppStore()
 const props = defineProps<{
   article: Article
   htmlContent: string
-  prevArticle: Article | null
-  nextArticle: Article | null
-}>()
-
-const emit = defineEmits<{
-  goPrev: []
-  goNext: []
 }>()
 
 // 内容容器引用
@@ -156,14 +149,6 @@ watch(() => appStore.isDark, () => {
         <span class="dot">·</span>
         <span>{{ article.tag }}</span>
       </div>
-      <div class="nav-row">
-        <button class="ghost-btn" type="button" :disabled="!prevArticle" @click="emit('goPrev')">
-          ← {{ t('article.prevArticle') }}
-        </button>
-        <button class="ghost-btn" type="button" :disabled="!nextArticle" @click="emit('goNext')">
-          {{ t('article.nextArticle') }} →
-        </button>
-      </div>
       <div ref="contentBlockRef" class="content-block" v-html="htmlContent"></div>
     </div>
   </article>
@@ -268,31 +253,5 @@ watch(() => appStore.isDark, () => {
 }
 
 /* Markdown 内容样式已移至 @/styles/markdown-content.css */
-
-.nav-row {
-  display: flex;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.ghost-btn {
-  padding: 8px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.ghost-btn:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--border), transparent 20%);
-  background: var(--surface-2);
-}
-
-.ghost-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 </style>
 
