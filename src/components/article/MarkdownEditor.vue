@@ -45,12 +45,19 @@ const { initFlowchart, rerenderFlowchart } = useFlowchartRenderer(previewContain
 /**
  * 初始化预览内容渲染
  */
-const initializePreview = () => {
+const initializePreview = (forceRerender = false) => {
   nextTick(() => {
     if (previewContainerRef.value) {
+      // 先添加复制按钮
       addPreviewCopyButtons()
-      initMermaid()
-      initFlowchart()
+      // 然后初始化图表（如果需要强制重新渲染，传递参数）
+      if (forceRerender) {
+        rerenderMermaid()
+        rerenderFlowchart()
+      } else {
+        initMermaid()
+        initFlowchart()
+      }
     }
   })
 }
@@ -65,15 +72,44 @@ watch(previewMode, (newMode) => {
   }
 })
 
-// 监听预览内容变化，重新初始化渲染功能
+// 防抖定时器
+let updateTimer: ReturnType<typeof setTimeout> | null = null
+
+/**
+ * 更新预览内容（带防抖）
+ */
+const updatePreview = () => {
+  // 清除之前的定时器
+  if (updateTimer) {
+    clearTimeout(updateTimer)
+  }
+  
+  // 防抖延迟，避免频繁更新
+  updateTimer = setTimeout(() => {
+    nextTick(() => {
+      // 再次等待，确保 v-html 已经更新了 DOM
+      setTimeout(() => {
+        if (previewContainerRef.value && previewMode.value !== 'edit') {
+          initializePreview(true)
+        }
+      }, 50)
+    })
+  }, 200) // 防抖延迟 200ms
+}
+
+// 监听内容变化，重新初始化所有渲染功能
+watch(() => props.modelValue, () => {
+  if (previewMode.value !== 'edit') {
+    updatePreview()
+  }
+}, { flush: 'post' })
+
+// 监听预览 HTML 变化（确保渲染）
 watch(() => previewContent.value.html, () => {
   if (previewMode.value !== 'edit' && previewContainerRef.value) {
-    nextTick(() => {
-      rerenderMermaid()
-      rerenderFlowchart()
-    })
+    updatePreview()
   }
-})
+}, { flush: 'post' })
 
 // 处理内容更新
 const handleInput = (event: Event) => {
