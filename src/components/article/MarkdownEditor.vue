@@ -137,7 +137,7 @@ if (previewMode.value !== 'edit') {
       <div v-show="previewMode === 'preview' || previewMode === 'split'" class="preview-panel">
         <div
           ref="previewContainerRef"
-          class="markdown-preview"
+          class="markdown-preview content-block"
           v-html="previewContent.html"
         ></div>
         <div v-if="!modelValue.trim()" class="preview-empty">
@@ -217,6 +217,12 @@ if (previewMode.value !== 'edit') {
 
 .editor-panel {
   width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .preview-panel {
@@ -230,14 +236,154 @@ if (previewMode.value !== 'edit') {
   min-height: 400px;
 }
 
+.content-container.mode-split .editor-panel,
 .content-container.mode-split .preview-panel {
   max-height: none;
   min-height: 500px;
 }
 
+.content-container.mode-split .editor-panel {
+  padding: 0;
+}
+
 .markdown-preview {
   width: 100%;
   color: var(--text-primary);
+}
+
+/* 覆盖 content-block 的 padding 和 border，因为 preview-panel 已经提供了 */
+.markdown-preview.content-block {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.markdown-preview :deep(h1),
+.markdown-preview :deep(h2),
+.markdown-preview :deep(h3),
+.markdown-preview :deep(h4),
+.markdown-preview :deep(h5),
+.markdown-preview :deep(h6) {
+  margin: 12px 0 8px;
+  line-height: 1.4;
+}
+
+.markdown-preview :deep(h1) {
+  font-size: 2em;
+  margin-block: 0.67em;
+}
+
+.markdown-preview :deep(h2) {
+  font-size: 1.5em;
+  margin-block: 0.75em;
+}
+
+.markdown-preview :deep(h3) {
+  font-size: 1.17em;
+  margin-block: 0.83em;
+}
+
+.markdown-preview :deep(p) {
+  margin: 8px 0;
+  line-height: 1.7;
+}
+
+.markdown-preview :deep(ul),
+.markdown-preview :deep(ol) {
+  padding-left: 18px;
+  margin: 8px 0 12px;
+}
+
+.markdown-preview :deep(blockquote) {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.markdown-preview :deep(pre.hljs) {
+  margin: 12px 0;
+  padding: 16px;
+  padding-top: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative;
+  background: #f6f8fa;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 500px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dark .markdown-preview :deep(pre.hljs) {
+  background: #1e1e1e;
+  border-color: #333;
+}
+
+.markdown-preview :deep(code:not(pre code)) {
+  background: #fff5f5;
+  color: #c7254e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.dark .markdown-preview :deep(code:not(pre code)) {
+  background: #4a1a1a;
+  color: #ff6b6b;
+}
+
+.markdown-preview :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+  max-width: 100%;
+}
+
+.markdown-preview :deep(table th),
+.markdown-preview :deep(table td) {
+  padding: 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.markdown-preview :deep(table th) {
+  background: var(--surface);
+  font-weight: 600;
+}
+
+.markdown-preview :deep(table td) {
+  background: var(--surface-2);
+}
+
+.markdown-preview :deep(img) {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin: 12px 0;
+}
+
+.markdown-preview :deep(.mermaid-container),
+.markdown-preview :deep(.flowchart-container) {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: auto;
+  max-height: 600px;
+  text-align: center;
 }
 
 .preview-empty {
@@ -254,34 +400,43 @@ if (previewMode.value !== 'edit') {
   line-height: 1.6;
   width: 100%;
   resize: vertical;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  padding: 20px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   color: var(--text-primary);
   font-size: 16px;
-  transition: border-color 0.2s ease;
+  transition: none;
   box-sizing: border-box;
+  outline: none;
+  flex: 1;
 }
 
 .content-textarea:focus {
   outline: none;
-  border-color: var(--brand);
+  border: none;
 }
 
 .content-textarea.form-error {
-  border-color: #c53030;
-  background: #fff5f5;
-}
-
-.dark .content-textarea.form-error {
-  border-color: #c53030;
-  background: #4a1a1a;
+  border: none;
+  background: transparent;
 }
 
 .content-container.mode-split .content-textarea {
-  height: 500px;
+  height: 100%;
   resize: none;
+  min-height: 500px;
+}
+
+.content-container.mode-edit .content-textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 12px;
+}
+
+.content-container.mode-edit .content-textarea:focus {
+  border-color: var(--brand);
 }
 
 /* 响应式 */
