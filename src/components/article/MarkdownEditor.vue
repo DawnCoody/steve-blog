@@ -239,6 +239,11 @@ if (previewMode.value !== 'edit') {
   width: 100%;
 }
 
+.content-container.mode-preview .preview-panel {
+  max-height: none;
+  min-height: 400px;
+}
+
 .content-container.mode-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -266,8 +271,10 @@ if (previewMode.value !== 'edit') {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  overflow-y: auto;
   max-height: 600px;
   min-height: 400px;
 }
@@ -285,6 +292,9 @@ if (previewMode.value !== 'edit') {
 .markdown-preview {
   width: 100%;
   color: var(--text-primary);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
 }
 
 /* 覆盖 content-block 的 padding 和 border，因为 preview-panel 已经提供了 */
@@ -292,6 +302,7 @@ if (previewMode.value !== 'edit') {
   padding: 0;
   border: none;
   background: transparent;
+  overflow: visible;
 }
 
 .markdown-preview :deep(h1),
