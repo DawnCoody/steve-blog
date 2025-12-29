@@ -28,6 +28,7 @@ const previewMode = ref<'edit' | 'preview' | 'split'>('edit')
 // Markdown 实时预览
 const previewContent = useArticleMarkdown(computed(() => props.modelValue))
 const previewContainerRef = ref<HTMLElement>()
+const editorRef = ref<HTMLTextAreaElement>()
 
 // 使用 composables 处理预览内容
 const { addCopyButtons: addPreviewCopyButtons } = useCodeCopy(previewContainerRef, (key: string) => {
@@ -160,6 +161,7 @@ if (previewMode.value !== 'edit') {
       <!-- 编辑区域 -->
       <div v-show="previewMode === 'edit' || previewMode === 'split'" class="editor-panel">
         <textarea
+          ref="editorRef"
           :value="modelValue"
           @input="handleInput"
           rows="20"
@@ -264,6 +266,8 @@ if (previewMode.value !== 'edit') {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  max-height: 600px;
+  min-height: 400px;
 }
 
 .preview-panel {
@@ -271,7 +275,8 @@ if (previewMode.value !== 'edit') {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -281,8 +286,9 @@ if (previewMode.value !== 'edit') {
 
 .content-container.mode-split .editor-panel,
 .content-container.mode-split .preview-panel {
-  max-height: none;
+  max-height: 600px;
   min-height: 500px;
+  height: 600px;
 }
 
 .content-container.mode-split .editor-panel {
@@ -292,9 +298,6 @@ if (previewMode.value !== 'edit') {
 .markdown-preview {
   width: 100%;
   color: var(--text-primary);
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
 }
 
 /* 覆盖 content-block 的 padding 和 border，因为 preview-panel 已经提供了 */
@@ -302,7 +305,6 @@ if (previewMode.value !== 'edit') {
   padding: 0;
   border: none;
   background: transparent;
-  overflow: visible;
 }
 
 .markdown-preview :deep(h1),
@@ -446,7 +448,7 @@ if (previewMode.value !== 'edit') {
   font-family: ui-monospace, 'Courier New', monospace;
   line-height: 1.6;
   width: 100%;
-  resize: vertical;
+  resize: none;
   padding: 20px;
   border: none;
   border-radius: 0;
@@ -457,6 +459,8 @@ if (previewMode.value !== 'edit') {
   box-sizing: border-box;
   outline: none;
   flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .content-textarea:focus {
