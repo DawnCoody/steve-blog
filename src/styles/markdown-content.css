@@ -147,14 +147,19 @@
   line-height: 1.6;
   position: relative;
   background: #f6f8fa;
-  /* 允许内容换行，不显示横向滚动条 */
-  overflow-x: visible;
-  overflow-y: visible;
-  overflow: visible;
+  /* 设置滚动：横向和纵向都支持 */
+  overflow-x: auto;
+  overflow-y: auto;
+  overflow: auto;
+  /* 设置最大高度，超出时显示滚动条 */
+  max-height: 500px;
   /* 确保宽度限制 */
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  /* 滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
 /* 覆盖 highlight.js 的 pre code.hljs 样式（如果存在） */
@@ -170,28 +175,89 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
   display: block;
-  /* 关键：允许自动换行，保留空格和换行符 */
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
-  overflow-wrap: break-word;
+  /* 关键：保持代码原始格式，不换行，由 pre 容器处理滚动 */
+  white-space: pre;
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: normal;
   color: inherit;
-  /* 确保代码内容在容器宽度内 */
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  /* 允许内容换行 */
+  /* 确保代码内容可以超出容器宽度 */
+  width: auto;
+  max-width: none;
+  min-width: max-content;
+  box-sizing: content-box;
+  /* code 元素不设置 overflow，让 pre 元素处理滚动 */
   overflow: visible;
 }
 
-/* 确保 code 元素内的所有子元素（highlight.js 生成的 span）也允许换行 */
+/* 确保 code 元素内的所有子元素（highlight.js 生成的 span）也不换行 */
 .content-block pre.hljs code *,
 .content-block pre.hljs code span {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
-  overflow-wrap: break-word;
+  white-space: pre;
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: normal;
   display: inline;
+}
+
+/* Webkit 浏览器滚动条样式 - 代码块 */
+.content-block pre.hljs::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.content-block pre.hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Webkit 浏览器滚动条样式 - Mermaid 容器 */
+.content-block .mermaid-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.content-block .mermaid-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.content-block .mermaid-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.content-block .mermaid-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Webkit 浏览器滚动条样式 - Flowchart 容器 */
+.content-block .flowchart-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.content-block .flowchart-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.content-block .flowchart-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.content-block .flowchart-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 /* 复制按钮样式 */
@@ -322,8 +388,16 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
+  /* 设置滚动：横向和纵向都支持 */
   overflow-x: auto;
+  overflow-y: auto;
+  overflow: auto;
+  /* 设置最大高度，超出时显示滚动条 */
+  max-height: 600px;
   text-align: center;
+  /* 滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
 .content-block pre.mermaid {
@@ -371,8 +445,16 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
+  /* 设置滚动：横向和纵向都支持 */
   overflow-x: auto;
+  overflow-y: auto;
+  overflow: auto;
+  /* 设置最大高度，超出时显示滚动条 */
+  max-height: 600px;
   text-align: center;
+  /* 滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
 .content-block pre.flowchart {
@@ -420,6 +502,32 @@
 }
 
 .dark .content-block pre.hljs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 暗色主题 - Mermaid 容器滚动条 */
+.dark .content-block .mermaid-container {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.dark .content-block .mermaid-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .content-block .mermaid-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 暗色主题 - Flowchart 容器滚动条 */
+.dark .content-block .flowchart-container {
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.dark .content-block .flowchart-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .content-block .flowchart-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
 
