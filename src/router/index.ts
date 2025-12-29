@@ -56,6 +56,12 @@ const router = createRouter({
       path: '/contact',
       name: 'contact',
       component: () => import('@/pages/ContactPage.vue')
+    },
+    // 标签云页
+    {
+      path: '/tags',
+      name: 'tagCloud',
+      component: () => import('@/pages/TagCloudPage.vue')
     }
   ],
   // 路由切换时的滚动行为：滚动到页面顶部

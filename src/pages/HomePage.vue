@@ -53,6 +53,13 @@ const goToArticles = () => {
   router.push({ name: 'articles' })
 }
 
+/**
+ * 跳转到标签云页
+ */
+const goToTagCloud = () => {
+  router.push({ name: 'tagCloud' })
+}
+
 onMounted(async () => {
   // 确保文章已加载
   await initializeArticles()
@@ -153,7 +160,7 @@ onMounted(async () => {
             </div>
           </div>
           <div class="stat-divider"></div>
-          <div class="stat-item" role="button" tabindex="0" @click="goToArticles" @keyup.enter="goToArticles">
+          <div class="stat-item" role="button" tabindex="0" @click="goToTagCloud" @keyup.enter="goToTagCloud">
             <div class="stat-icon">🏷️</div>
             <div class="stat-content">
               <span class="stat-value">{{ totalCategories }}</span>

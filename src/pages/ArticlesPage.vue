@@ -4,9 +4,9 @@
  * 功能：文章列表展示、分类筛选、搜索、排序、新建文章
  */
 
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { articles } from '@/data'
 import { useArticleSearch } from '@/composables/useArticleSearch'
 import { useCategories } from '@/composables/useCategories'
@@ -17,6 +17,7 @@ import ArticleListView from '@/components/ArticleListView.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const appStore = useAppStore()
 
 // 分类列表（从国际化配置动态获取，包含"全部"选项）
@@ -24,6 +25,21 @@ const { categories } = useCategories(true)
 
 // 当前选中的分类（默认为"全部"）
 const selectedCategory = ref('all')
+
+// 从路由参数中读取分类
+onMounted(() => {
+  const categoryParam = route.query.category as string
+  if (categoryParam && categories.value.some(cat => cat.key === categoryParam)) {
+    selectedCategory.value = categoryParam
+  }
+})
+
+// 监听路由变化，更新分类
+watch(() => route.query.category, (newCategory) => {
+  if (newCategory && categories.value.some(cat => cat.key === newCategory)) {
+    selectedCategory.value = newCategory as string
+  }
+})
 
 /**
  * 计算每个分类下的文章数量

@@ -213,6 +213,11 @@
       "Here, past converses with future",
       "Welcome to my world"
     ]
+  },
+  "tagCloud": {
+    "title": "Tag Cloud",
+    "subtitle": "Click on a tag to view all articles in that category",
+    "empty": "No category tags available"
   }
 }
 
