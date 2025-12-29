@@ -4,20 +4,13 @@
  * 功能：创建新文章或编辑已有文章，支持表单验证、封面预设等
  */
 
-import { onMounted, computed, ref, watch, nextTick } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getArticleById } from '@/data'
 import { useArticleEditor, type ValidationError } from '@/composables/useArticleEditor'
 import { useCategories } from '@/composables/useCategories'
-import { useArticleMarkdown } from '@/composables/useArticleMarkdown'
-import { useMermaidRenderer } from '@/composables/useMermaidRenderer'
-import { useFlowchartRenderer } from '@/composables/useFlowchartRenderer'
-import { useCodeCopy } from '@/composables/useCodeCopy'
-// 导入样式
-import 'highlight.js/styles/github.css'
-import 'katex/dist/katex.min.css'
-import '@/styles/markdown-content.css'
+import MarkdownEditor from '@/components/article/MarkdownEditor.vue'
 
 // 封面图片预览
 const coverImagePreview = ref<string | null>(null)
@@ -122,59 +115,6 @@ const showErrors = ref(false)
 // 分类选项列表（从国际化配置动态获取，不包含"全部"选项）
 const { categories } = useCategories(false)
 
-// 预览模式：'edit' | 'preview' | 'split'
-const previewMode = ref<'edit' | 'preview' | 'split'>('edit')
-
-// Markdown 实时预览
-const previewContent = useArticleMarkdown(computed(() => form.content))
-const previewContainerRef = ref<HTMLElement>()
-
-// 使用 composables 处理预览内容
-const { addCopyButtons: addPreviewCopyButtons } = useCodeCopy(previewContainerRef, (key: string) => {
-  const translations: Record<string, string> = {
-    'copy': t('code.copy'),
-    'copied': t('code.copied'),
-    'copyFailed': t('code.copyFailed'),
-    'copyCode': t('code.copyCode')
-  }
-  return translations[key] || key
-})
-const { initMermaid, rerenderMermaid } = useMermaidRenderer(previewContainerRef)
-const { initFlowchart, rerenderFlowchart } = useFlowchartRenderer(previewContainerRef)
-
-/**
- * 初始化预览内容渲染
- */
-const initializePreview = () => {
-  nextTick(() => {
-    if (previewContainerRef.value) {
-      addPreviewCopyButtons()
-      initMermaid()
-      initFlowchart()
-    }
-  })
-}
-
-// 监听预览模式变化
-watch(previewMode, (newMode) => {
-  if (newMode !== 'edit') {
-    // 延迟初始化，确保 DOM 已更新
-    nextTick(() => {
-      initializePreview()
-    })
-  }
-})
-
-// 监听预览内容变化，重新初始化渲染功能
-watch(() => previewContent.value.html, () => {
-  if (previewMode.value !== 'edit' && previewContainerRef.value) {
-    nextTick(() => {
-      rerenderMermaid()
-      rerenderFlowchart()
-    })
-  }
-})
-
 // 封面预设（CSS 渐变背景）
 const coverPresets = [
   'linear-gradient(135deg, #0a0f26 0%, #0c1a4d 35%, #032c5f 65%, #0c1a4d 100%)',
@@ -202,11 +142,6 @@ onMounted(() => {
   } else {
     // 新建模式，重置表单
     resetForm()
-  }
-  
-  // 如果初始模式不是编辑模式，初始化预览
-  if (previewMode.value !== 'edit') {
-    initializePreview()
   }
 })
 
@@ -473,62 +408,15 @@ const handleSubmit = async () => {
         </div>
 
         <div class="form-section">
-          <div class="content-header">
-            <label class="form-label" :class="{ 'has-error': showErrors && validationErrors.some((e: ValidationError) => e.field === 'content') }">
-              {{ t('article.content') }}
-            </label>
-            <div class="preview-mode-toggle">
-              <button
-                type="button"
-                class="mode-btn"
-                :class="{ active: previewMode === 'edit' }"
-                @click="previewMode = 'edit'"
-              >
-                {{ t('article.editMode') }}
-              </button>
-              <button
-                type="button"
-                class="mode-btn"
-                :class="{ active: previewMode === 'split' }"
-                @click="previewMode = 'split'"
-              >
-                {{ t('article.splitMode') }}
-              </button>
-              <button
-                type="button"
-                class="mode-btn"
-                :class="{ active: previewMode === 'preview' }"
-                @click="previewMode = 'preview'"
-              >
-                {{ t('article.previewMode') }}
-              </button>
-            </div>
-          </div>
-          
-          <div class="content-container" :class="`mode-${previewMode}`">
-            <!-- 编辑区域 -->
-            <div v-show="previewMode === 'edit' || previewMode === 'split'" class="editor-panel">
-              <textarea
-                v-model="form.content"
-                rows="20"
-                :placeholder="t('article.contentPlaceholder')"
-                class="content-textarea"
-                :class="{ 'form-error': showErrors && validationErrors.some((e: ValidationError) => e.field === 'content') }"
-              ></textarea>
-            </div>
-            
-            <!-- 预览区域 -->
-            <div v-show="previewMode === 'preview' || previewMode === 'split'" class="preview-panel">
-              <div
-                ref="previewContainerRef"
-                class="markdown-preview"
-                v-html="previewContent.html"
-              ></div>
-              <div v-if="!form.content.trim()" class="preview-empty">
-                {{ t('article.previewEmpty') }}
-              </div>
-            </div>
-          </div>
+          <label class="form-label" :class="{ 'has-error': showErrors && validationErrors.some((e: ValidationError) => e.field === 'content') }">
+            {{ t('article.content') }}
+          </label>
+          <MarkdownEditor
+            :model-value="form.content || ''"
+            @update:model-value="form.content = $event"
+            :placeholder="t('article.contentPlaceholder') || undefined"
+            :has-error="showErrors && validationErrors.some((e: ValidationError) => e.field === 'content')"
+          />
           <p class="form-hint">{{ t('article.contentHint') }}</p>
         </div>
 
@@ -699,114 +587,6 @@ const handleSubmit = async () => {
 .form-label select.form-error:focus {
   border-color: #c53030;
   outline: 2px solid rgba(197, 48, 48, 0.2);
-}
-
-.content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.preview-mode-toggle {
-  display: flex;
-  gap: 4px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px;
-}
-
-.mode-btn {
-  padding: 6px 12px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.mode-btn:hover {
-  color: var(--text-primary);
-  background: var(--surface);
-}
-
-.mode-btn.active {
-  background: var(--brand);
-  color: var(--bg);
-}
-
-.content-container {
-  position: relative;
-  min-height: 400px;
-}
-
-.content-container.mode-edit .editor-panel,
-.content-container.mode-preview .preview-panel {
-  width: 100%;
-}
-
-.content-container.mode-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  min-height: 500px;
-}
-
-.content-container.mode-split .editor-panel,
-.content-container.mode-split .preview-panel {
-  width: 100%;
-}
-
-.editor-panel {
-  width: 100%;
-}
-
-.preview-panel {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  padding: 20px;
-  overflow-y: auto;
-  max-height: 600px;
-  min-height: 400px;
-}
-
-.content-container.mode-split .preview-panel {
-  max-height: none;
-  min-height: 500px;
-}
-
-.markdown-preview {
-  width: 100%;
-  color: var(--text-primary);
-}
-
-.preview-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.content-textarea {
-  font-family: ui-monospace, 'Courier New', monospace;
-  line-height: 1.6;
-  width: 100%;
-  resize: vertical;
-}
-
-.content-container.mode-split .content-textarea {
-  height: 500px;
-  resize: none;
 }
 
 .form-hint {
@@ -982,28 +762,6 @@ const handleSubmit = async () => {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .content-container.mode-split {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .content-container.mode-split .editor-panel,
-  .content-container.mode-split .preview-panel {
-    min-height: 300px;
-  }
-
-  .content-container.mode-split .content-textarea {
-    height: 300px;
-  }
-
-  .preview-mode-toggle {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .mode-btn {
-    flex: 1;
-  }
 }
 
 /* 小屏手机 (640px 及以下) */
