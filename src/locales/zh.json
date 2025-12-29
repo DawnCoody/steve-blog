@@ -85,8 +85,8 @@
     "ros": "ros机器人",
     "middleware": "中间件",
     "apollo": "apollo",
-    "markdown": "markdown",
-    "deepLearning": "深度学习"
+    "deepLearning": "深度学习",
+    "markdown": "markdown"
   },
   "search": {
     "placeholder": "搜索文章标题、内容、标签...",
