@@ -20,17 +20,45 @@ onMounted(async () => {
 // 获取分类列表（不包含"全部"）
 const { categories } = useCategories(false)
 
-// 计算每个分类的文章数量
+// 计算每个分类的文章数量，并生成随机位置和移动参数
 const categoryStats = computed(() => {
   if (!articlesLoaded.value) return []
   
-  return categories.value.map((category) => {
+  return categories.value.map((category, index) => {
     const count = articles.filter(
       (article) => article.categoryKey === category.key
     ).length
+    
+    // 使用多个质数组合生成更随机的初始位置
+    const seed1 = index * 73 + category.key.charCodeAt(0)
+    const seed2 = index * 97 + (category.key.length * 17)
+    const seed3 = index * 137 + (count * 23)
+    
+    // 生成随机初始位置（10% - 90%）
+    const startX = 10 + (seed1 * 83 + seed2 * 47) % 80
+    const startY = 10 + (seed2 * 61 + seed3 * 53) % 80
+    
+    // 计算移动范围（百分比），确保不超出屏幕
+    const moveRangeX = Math.min(20, (90 - startX) * 0.4, (startX - 10) * 0.4)
+    const moveRangeY = Math.min(20, (90 - startY) * 0.4, (startY - 10) * 0.4)
+    
+    // 生成随机移动参数
+    const moveX = ((seed1 * 31 + seed3 * 19) % (moveRangeX * 2)) - moveRangeX
+    const moveY = ((seed2 * 41 + seed1 * 29) % (moveRangeY * 2)) - moveRangeY
+    
     return {
       ...category,
-      count
+      count,
+      // 随机初始位置（百分比）
+      startX: Math.max(10, Math.min(90, startX)),
+      startY: Math.max(10, Math.min(90, startY)),
+      // 随机移动参数（百分比，限制在安全范围内）
+      moveX,
+      moveY,
+      // 动画持续时间（8-12秒，更快的移动）
+      duration: 8 + (seed1 * 7) % 4,
+      // 动画延迟
+      delay: (seed2 * 0.1) % 1
     }
   }).filter((item) => item.count > 0) // 只显示有文章的分类
 })
@@ -46,12 +74,17 @@ const minCount = computed(() => {
   return Math.min(...categoryStats.value.map((item) => item.count))
 })
 
-// 计算标签大小（基于文章数量）
-const getTagSize = (count: number) => {
-  if (maxCount.value === minCount.value) return 1
-  // 归一化到 0.6 - 2.0 的范围
+// 计算圆球大小（基于文章数量，返回像素值）
+const getBallSize = (count: number) => {
+  if (maxCount.value === minCount.value) return 80
+  // 归一化到 60px - 150px 的范围
   const normalized = (count - minCount.value) / (maxCount.value - minCount.value)
-  return 0.6 + normalized * 1.4
+  return 60 + normalized * 90
+}
+
+// 计算字体大小（基于圆球大小）
+const getFontSize = (ballSize: number) => {
+  return Math.max(12, Math.min(24, ballSize * 0.2))
 }
 
 // 计算标签颜色（基于文章数量，渐变色）
@@ -89,11 +122,6 @@ onMounted(() => {
 <template>
   <main class="tag-cloud-page">
     <div class="container" :class="{ visible: isVisible }">
-      <header class="page-header">
-        <h1 class="page-title">{{ t('tagCloud.title') }}</h1>
-        <p class="page-subtitle">{{ t('tagCloud.subtitle') }}</p>
-      </header>
-
       <div v-if="categoryStats.length === 0" class="empty-state">
         <div class="empty-icon">🏷️</div>
         <p class="empty-text">{{ t('tagCloud.empty') }}</p>
@@ -101,18 +129,28 @@ onMounted(() => {
 
       <div v-else class="tag-cloud-container">
         <div
-          v-for="(item, index) in categoryStats"
+          v-for="item in categoryStats"
           :key="item.key"
-          class="tag-item"
+          class="tag-ball"
           :style="{
-            fontSize: `${getTagSize(item.count)}em`,
+            width: `${getBallSize(item.count)}px`,
+            height: `${getBallSize(item.count)}px`,
+            fontSize: `${getFontSize(getBallSize(item.count))}px`,
             color: getTagColor(item.count),
-            animationDelay: `${index * 0.1}s`
+            left: `${item.startX}%`,
+            top: `${item.startY}%`,
+            '--move-x': `${item.moveX}%`,
+            '--move-y': `${item.moveY}%`,
+            '--duration': `${item.duration}s`,
+            '--delay': `${item.delay}s`
           }"
           @click="handleTagClick(item.key)"
         >
-          <span class="tag-text">{{ item.label }}</span>
-          <span class="tag-count">({{ item.count }})</span>
+          <div class="ball-content">
+            <span class="ball-text">{{ item.label }}</span>
+            <span class="ball-count">{{ item.count }}</span>
+          </div>
+          <div class="ball-glow"></div>
         </div>
       </div>
     </div>
@@ -130,7 +168,7 @@ onMounted(() => {
 .tag-cloud-page {
   min-height: 100vh;
   position: relative;
-  padding: 80px 28px;
+  padding: 0px 0px;
   overflow: hidden;
   background: var(--bg);
 }
@@ -150,27 +188,6 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.page-title {
-  font-size: clamp(36px, 6vw, 64px);
-  font-weight: 800;
-  margin: 0 0 16px;
-  background: linear-gradient(135deg, var(--brand) 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.page-subtitle {
-  font-size: 18px;
-  color: var(--text-muted);
-  margin: 0;
-}
-
 .empty-state {
   text-align: center;
   padding: 80px 20px;
@@ -188,84 +205,135 @@ onMounted(() => {
 }
 
 .tag-cloud-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 24px 32px;
-  padding: 40px 20px;
-  min-height: 400px;
-}
-
-.tag-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 30px;
-  background: var(--surface);
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 600;
-  user-select: none;
   position: relative;
+  width: 100%;
+  height: calc(100vh - 160px);
+  min-height: 500px;
   overflow: hidden;
-  animation: tagFadeIn 0.6s ease-out backwards;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tag-item::before {
+.tag-ball {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid currentColor;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  animation: ballFadeIn 0.8s ease-out backwards, ballFloat var(--duration, 20s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 30px currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.tag-ball::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, currentColor, transparent, currentColor);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.tag-ball:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25), 0 0 50px currentColor;
+  z-index: 10;
+}
+
+.tag-ball:hover::before {
+  opacity: 0.3;
+}
+
+.tag-ball:active {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.ball-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
 }
 
-.tag-item:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: currentColor;
+.ball-text {
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 90%;
 }
 
-.tag-item:hover::before {
-  left: 100%;
+.ball-count {
+  font-size: 0.6em;
+  opacity: 0.9;
+  font-weight: 600;
+  margin-top: 2px;
 }
 
-.tag-item:active {
-  transform: translateY(-2px) scale(1.02);
+.ball-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 0%, transparent 70%);
+  opacity: 0.2;
+  filter: blur(10px);
+  z-index: 0;
+  animation: glowPulse 3s ease-in-out infinite;
 }
 
-.tag-text {
-  position: relative;
-  z-index: 1;
-}
-
-.tag-count {
-  font-size: 0.7em;
-  opacity: 0.8;
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-}
-
-@keyframes tagFadeIn {
+@keyframes ballFadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.8);
+    transform: translate(-50%, -50%) scale(0);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes ballFloat {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0);
+  }
+  20% {
+    transform: translate(-50%, -50%) translate(calc(var(--move-x, 0%) * 0.6), calc(var(--move-y, 0%) * 0.8));
+  }
+  40% {
+    transform: translate(-50%, -50%) translate(var(--move-x, 0%), calc(var(--move-y, 0%) * 0.5));
+  }
+  60% {
+    transform: translate(-50%, -50%) translate(calc(var(--move-x, 0%) * 0.8), calc(var(--move-y, 0%) * -0.3));
+  }
+  80% {
+    transform: translate(-50%, -50%) translate(calc(var(--move-x, 0%) * 0.3), calc(var(--move-y, 0%) * -0.6));
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0, 0);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
   }
 }
 
@@ -335,18 +403,13 @@ onMounted(() => {
     padding: 60px 20px;
   }
 
-  .page-header {
-    margin-bottom: 40px;
-  }
-
   .tag-cloud-container {
-    gap: 16px 20px;
-    padding: 30px 10px;
+    height: calc(100vh - 120px);
+    min-height: 400px;
   }
 
-  .tag-item {
-    padding: 10px 20px;
-    font-size: 0.9em;
+  .tag-ball {
+    border-width: 2px;
   }
 }
 </style>
