@@ -15,6 +15,7 @@ import { incrementArticleViews } from '@/utils/articleStats'
 import ArticleHeader from '@/components/article/ArticleHeader.vue'
 import ArticleContent from '@/components/article/ArticleContent.vue'
 import ArticleTOC from '@/components/article/ArticleTOC.vue'
+import ArticleReward from '@/components/article/ArticleReward.vue'
 import CommentSection from '@/components/article/CommentSection.vue'
 
 const route = useRoute()
@@ -162,6 +163,13 @@ onMounted(async () => {
           <ArticleContent
             :article="article"
             :html-content="rendered.html"
+          />
+          <ArticleReward
+            :article="article"
+            :prev-article="prevArticle ?? null"
+            :next-article="nextArticle ?? null"
+            @go-prev="goPrev"
+            @go-next="goNext"
           />
           <CommentSection
             :comments="activeComments"
