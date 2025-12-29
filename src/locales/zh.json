@@ -152,9 +152,12 @@
     "published": "发表于",
     "updated": "更新于",
     "wordCount": "字数总计",
-    "readingTime": "阅读时长",
+    "readingTime": "预估阅读",
+    "actualReadingTime": "实际阅读",
     "views": "阅读量",
-    "minute": "分钟"
+    "comments": "评论",
+    "minute": "分钟",
+    "seconds": "秒"
   },
   "toc": {
     "title": "目录"
