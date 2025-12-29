@@ -525,14 +525,14 @@ body.reading-mode .detail-card .content-block blockquote {
 
 body.reading-mode .detail-card .content-block code {
   font-size: 16px;
-  padding: 2px 6px;
+  padding: 0px 0px;
   border-radius: 4px;
   background: var(--surface-2);
 }
 
 body.reading-mode .detail-card .content-block pre {
   margin: 20px 0;
-  padding: 20px;
+  padding: 0px;
   border-radius: 8px;
   overflow-x: auto;
 }
@@ -580,7 +580,7 @@ body.reading-mode .detail-grid .toc {
   }
 
   body.reading-mode .article-area {
-    max-width: 800px;
+    max-width: 100%;
     padding: 0;
   }
 

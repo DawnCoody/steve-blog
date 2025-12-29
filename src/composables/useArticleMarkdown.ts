@@ -72,7 +72,22 @@ const md = new MarkdownIt({
     }
     
     // 支持 Mermaid 图表（不包括 flowchart 和 graph）
-    if (lang === 'mermaid' || lang === 'sequenceDiagram' || lang === 'classDiagram' || lang === 'stateDiagram' || lang === 'erDiagram' || lang === 'journey' || lang === 'gantt' || lang === 'pie' || lang === 'requirement' || lang === 'gitgraph' || lang === 'mindmap' || lang === 'timeline') {
+    // 检查 lang 是否包含 mermaid 相关关键字（支持 language-mermaid 等格式）
+    const isMermaid = lang === 'mermaid' || 
+      lang === 'sequenceDiagram' || 
+      lang === 'classDiagram' || 
+      lang === 'stateDiagram' || 
+      lang === 'erDiagram' || 
+      lang === 'journey' || 
+      lang === 'gantt' || 
+      lang === 'pie' || 
+      lang === 'requirement' || 
+      lang === 'gitgraph' || 
+      lang === 'mindmap' || 
+      lang === 'timeline' ||
+      (lang && (lang.toLowerCase().includes('mermaid') || lang.toLowerCase().includes('sequence') || lang.toLowerCase().includes('gantt')))
+    
+    if (isMermaid) {
       // 生成唯一的 ID
       const id = 'mermaid-' + Math.random().toString(36).substr(2, 9)
       return (
@@ -84,7 +99,14 @@ const md = new MarkdownIt({
       )
     }
     
-    // 支持其他代码高亮
+    // 支持其他代码高亮（排除 mermaid 和 flowchart）
+    // 再次检查，确保 mermaid 和 flowchart 不会被当作普通代码处理
+    const langLower = lang ? lang.toLowerCase() : ''
+    if (langLower.includes('mermaid') || langLower.includes('flowchart') || langLower.includes('flow')) {
+      // 如果包含 mermaid 或 flowchart 关键字，返回空字符串，避免生成带边框的 code 元素
+      return ''
+    }
+    
     if (lang && hljs.getLanguage(lang)) {
       try {
         return (
