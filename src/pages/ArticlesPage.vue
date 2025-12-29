@@ -284,8 +284,9 @@ watch(() => appStore.articleViewMode, () => {
           :items-per-page="itemsPerPage"
         />
 
-        <!-- 分页控件 -->
+        <!-- 分页控件（仅在存在文章时显示） -->
         <Pagination
+          v-if="displayArticles.length > 0"
           v-model:current-page="currentPage"
           v-model:items-per-page="itemsPerPage"
           :total-pages="totalPages"
