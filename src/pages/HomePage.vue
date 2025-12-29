@@ -54,10 +54,24 @@ const goToArticles = () => {
 }
 
 /**
- * 跳转到标签云页
+ * 检查是否有分类包含文章
+ */
+const hasCategoriesWithArticles = computed(() => {
+  return categories.value.some(category => {
+    return articles.some(article => article.categoryKey === category.key)
+  })
+})
+
+/**
+ * 跳转到标签云页或文章列表页
+ * 如果没有分类有文章，跳转到文章列表页
  */
 const goToTagCloud = () => {
-  router.push({ name: 'tagCloud' })
+  if (hasCategoriesWithArticles.value) {
+    router.push({ name: 'tagCloud' })
+  } else {
+    router.push({ name: 'articles' })
+  }
 }
 
 onMounted(async () => {
