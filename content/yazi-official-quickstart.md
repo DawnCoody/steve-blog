@@ -2,6 +2,19 @@
 layout: default
 title: "Yazi 使用方式：按官网 Quick Start 一页看懂"
 description: "基于 Yazi 官方 Quick Start 和 Installation 整理的中文上手指南。"
+categoryKey: 工具 
+tag: mac 上的一些好用的工具
+badge: New
+date: 2026-3-24
+updatedDate: 2026-3-24
+platform: Wechat
+cover: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+articleId: 
+---
+
+# 你的文章内容
+
+这里是 Markdown 内容...
 ---
 
 # Yazi 使用方式：按官网 Quick Start 一页看懂
