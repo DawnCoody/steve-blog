@@ -24,13 +24,13 @@ const totalCategories = computed(() => categories.value.length)
 // 技能数据
 const skills = {
   programming: [
-    { name: 'C/C++', years: 6 },
+    { name: 'C/C++', years: null },
     { name: 'Python', years: null },
     { name: 'QT/QML', years: null },
     { name: 'ROS', years: null },
     { name: 'Flutter', years: null },
     { name: 'HTML/JS', years: null },
-    { name: 'yolo', years: null }
+    { name: 'java', years: null }
   ],
   protocols: ['Websocket', 'TCP/IP', 'HTTP', 'MQTT', 'RTSP', 'ROS'],
   tools: ['VSCode', 'GDB', 'Valgrind', 'CMake', 'Git', 'Docker', 'CI/CD']

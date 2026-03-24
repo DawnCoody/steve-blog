@@ -7,13 +7,13 @@
     "contact": "联系"
   },
   "hero": {
-    "homeTitle": "你好，我是博客",
+    "homeTitle": "你好，我是dawncoody",
     "homeDesc": "记录创作、学习与生活方式的个人站点。",
     "contactTitle": "联系",
     "contactDesc": "如需合作或交流，欢迎通过以下方式联系我。",
     "name": "steve",
     "title": "嵌入式 Linux 应用软件工程师",
-    "subtitle": "6年嵌入式系统开发经验，专注于Linux环境下C/C++软件开发",
+    "subtitle": "专注C/C++软件开发",
     "greeting": "你好，我是",
     "intro": "专注于嵌入式系统开发，熟悉从需求分析到产品落地的全流程"
   },
@@ -37,9 +37,9 @@
     "bachelor": "本科",
     "major": "专业",
     "degree": "学历",
-    "university1": "武汉理工大学",
-    "university2": "武汉轻工大学",
-    "majorName": "车辆工程（专硕）",
+    "university1": "华中师范大学",
+    "university2": "武汉工程大学",
+    "majorName": "软件工程（专硕）",
     "stats": {
       "articles": "文章",
       "categories": "分类"

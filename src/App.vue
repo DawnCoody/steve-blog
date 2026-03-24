@@ -41,7 +41,7 @@ const toggleLocale = () => {
 <template>
   <div class="page">
     <header class="top-nav">
-      <div class="brand">BLOG</div>
+      <div class="brand">DawnCoody</div>
       <div class="nav-actions">
         <nav class="nav-links">
           <RouterLink
