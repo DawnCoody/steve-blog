@@ -86,7 +86,8 @@
     "middleware": "middleware | Middleware",
     "apollo": "apollo",
     "deepLearning": "deep learning",
-    "markdown": "markdown"
+    "markdown": "markdown",
+    "tool": "工具"
   },
   "search": {
     "placeholder": "Search articles by title, content, tags...",

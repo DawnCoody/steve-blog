@@ -86,7 +86,8 @@
     "middleware": "中间件",
     "apollo": "apollo",
     "deepLearning": "深度学习",
-    "markdown": "markdown"
+    "markdown": "markdown",
+    "tool":"工具"
   },
   "search": {
     "placeholder": "搜索文章标题、内容、标签...",
