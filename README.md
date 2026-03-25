@@ -1015,8 +1015,10 @@ export default defineConfig({
 
 #### 其他平台部署
 
-- **Vercel/Netlify**：无需修改，会自动识别
-- **自定义域名**：修改 `base` 为 `/`
+- **Vercel**：需要在项目根目录添加 `vercel.json`，将前端路由重写到 `index.html`，这样刷新 `/splash`、`/articles/:id` 等 history 路由时不会 404。
+- **GitHub Pages**：保留 `public/404.html`，并在 `index.html` 中加入 query 恢复脚本，用于兼容 SPA 深链刷新。
+- **自定义域名 / 根路径部署**：保持 `base` 为 `/`。
+- **子路径部署**：将 `vite.config.ts` 中的 `base` 改成对应子路径，例如 `/your-repo-name/`。
 
 ### 9. 更新 README.md
 
