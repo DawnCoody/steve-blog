@@ -2,9 +2,9 @@
 layout: default
 title: "Yazi 使用方式：按官网 Quick Start 一页看懂"
 description: "基于 Yazi 官方 Quick Start 和 Installation 整理的中文上手指南。"
-categoryKey: 工具 
-tag: mac 上的一些好用的工具
-badge: New
+categoryKey: mac 上好用的文件管理工具
+tag: mac
+badge: yazi
 date: 2026-3-24
 updatedDate: 2026-3-24
 platform: Wechat
